@@ -1,0 +1,62 @@
+/*
+ * HomePage
+ *
+ * This is the first thing users see of our App, at the '/' route
+ */
+
+import React from 'react';
+import styled from 'styled-components';
+import { Link } from 'react-router-dom';
+import { Layout } from 'antd';
+import { Menu } from '../../utils/antdUtils';
+const { Header } = Layout;
+
+export default class HeaderComp extends React.PureComponent {
+  componentDidMount() {}
+
+  render() {
+    return (
+      <HeaderWrapper>
+        <div className="logo">EOS Cannon</div>
+        <Menu
+          theme="dark"
+          mode="horizontal"
+          defaultSelectedKeys={['1']}
+          style={{ lineHeight: '64px' }}
+        >
+          <Menu.Item key="1">
+            <Link href="/stake" to="/stake">
+              质押
+            </Link>
+          </Menu.Item>
+          <Menu.Item key="2">
+            <Link href="/proxy" to="/proxy">
+              代理
+            </Link>
+          </Menu.Item>
+          <Menu.Item key="3">
+            <Link href="/transfer" to="/transfer">
+              转账
+            </Link>
+          </Menu.Item>
+        </Menu>
+      </HeaderWrapper>
+    );
+  }
+}
+
+const HeaderWrapper = styled(Header)`
+  position: fixed;
+  z-index: 1000;
+  width: 100%;
+  .logo {
+    width: 120px;
+    height: 31px;
+    margin: 16px 24px 16px 0;
+    line-height: 31px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #f5cb48;
+    float: left;
+  }
+`;
