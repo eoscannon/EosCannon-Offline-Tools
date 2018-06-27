@@ -12,7 +12,29 @@ import { Menu } from '../../utils/antdUtils';
 const { Header } = Layout;
 
 export default class HeaderComp extends React.PureComponent {
-  componentDidMount() {}
+  constructor(props) {
+    super(props);
+    this.state = {
+      defaultSelectedKeys: '1',
+    };
+  }
+
+  componentWillMount() {
+    let defaultSelectedKeys = '1';
+    switch (window.location.pathname) {
+      case '/stake':
+        defaultSelectedKeys = '1';
+        break;
+      case '/proxy':
+        defaultSelectedKeys = '2';
+        break;
+      default:
+        defaultSelectedKeys = '3';
+    }
+    this.setState({
+      defaultSelectedKeys,
+    });
+  }
 
   render() {
     return (
@@ -21,7 +43,7 @@ export default class HeaderComp extends React.PureComponent {
         <Menu
           theme="dark"
           mode="horizontal"
-          defaultSelectedKeys={['1']}
+          defaultSelectedKeys={[this.state.defaultSelectedKeys]}
           style={{ lineHeight: '64px' }}
         >
           <Menu.Item key="1">

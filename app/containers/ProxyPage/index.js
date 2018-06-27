@@ -148,7 +148,7 @@ export class ProxyPage extends React.Component {
               })(
                 <Input
                   prefix={
-                    <Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />
+                    <Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />
                   }
                   placeholder="请输入私钥"
                 />,
