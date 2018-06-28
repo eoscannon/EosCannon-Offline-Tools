@@ -22,14 +22,14 @@ export default class HeaderComp extends React.PureComponent {
   componentWillMount() {
     let defaultSelectedKeys = '1';
     switch (window.location.pathname) {
-      case '/stake':
-        defaultSelectedKeys = '1';
-        break;
       case '/proxy':
         defaultSelectedKeys = '2';
         break;
-      default:
+      case '/transfer':
         defaultSelectedKeys = '3';
+        break;
+      default:
+        defaultSelectedKeys = '1';
     }
     this.setState({
       defaultSelectedKeys,

@@ -7,6 +7,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Form, Icon, Input, Button, Alert, notification } from 'antd';
 import copy from 'copy-to-clipboard';
+import QRCode from 'qrcode.react';
 import EOS from 'eosjs';
 import { chainId, onLineAddress } from '../../utils/config';
 import {
@@ -25,6 +26,7 @@ export class TransferPage extends React.Component {
       GetTransactionButtonLoading: false,
       GetTransactionButtonState: false,
       CopyTransactionButtonState: false,
+      QrCodeValue: '',
     };
   }
 
@@ -107,6 +109,7 @@ export class TransferPage extends React.Component {
         });
         this.setState({
           GetTransactionButtonLoading: false,
+          QrCodeValue: JSON.stringify(tr.transaction),
         });
       });
   };
@@ -224,7 +227,7 @@ export class TransferPage extends React.Component {
             </FormItem>
             <FormItem>
               <Alert
-                message="复制签名报文"
+                message="复制签名报文/扫描二维码"
                 description={transactionInfoDescription}
                 type="info"
                 closable
@@ -236,6 +239,11 @@ export class TransferPage extends React.Component {
               })(
                 <TextArea disabled="true" placeholder="请复制生成的签名报文" />,
               )}
+            </FormItem>
+            <FormItem>
+              <div style={{ textAlign: 'center' }}>
+                <QRCode value={this.state.QrCodeValue} size={256} />
+              </div>
             </FormItem>
             <FormItem>
               <Button
