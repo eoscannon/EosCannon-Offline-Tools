@@ -1,7 +1,6 @@
 /*
- * HomePage
+ * HeaderComp
  *
- * This is the first thing users see of our App, at the '/' route
  */
 
 import React from 'react';
@@ -18,7 +17,9 @@ export default class HeaderComp extends React.PureComponent {
       defaultSelectedKeys: '1',
     };
   }
-
+  /**
+   * 根据URL地址，重新设置默认菜单选项
+   * */
   componentWillMount() {
     let defaultSelectedKeys = '1';
     switch (window.location.pathname) {

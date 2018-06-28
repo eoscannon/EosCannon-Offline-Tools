@@ -23,26 +23,30 @@ export class StakePage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isDelegatebw: true,
-      GetTransactionButtonLoading: false,
-      GetTransactionButtonState: false,
-      CopyTransactionButtonState: false,
-      QrCodeValue: '',
+      isDelegatebw: true, // true：质押；false：解质押
+      GetTransactionButtonLoading: false, // 点击获取报文时，按钮加载状态
+      GetTransactionButtonState: false, // 获取报文按钮可点击状态
+      CopyTransactionButtonState: false, // 复制报文按钮可点击状态
+      QrCodeValue: '欢迎使用EOS佳能离线工具', // 二维码内容
     };
   }
-
-  componentDidMount() {}
-
+  /**
+   * 输入框内容变化时，改变按钮状态
+   * */
   componentWillReceiveProps(nextProps) {
     this.onValuesChange(nextProps);
   }
-
+  /**
+   * 用户选择质押/解质押
+   * */
   onSwitchChange = checked => {
     this.setState({
       isDelegatebw: checked,
     });
   };
-
+  /**
+   * 输入框内容变化时，改变按钮状态
+   * */
   onValuesChange = nextProps => {
     const values = nextProps.form.getFieldsValue();
     const {
@@ -71,7 +75,9 @@ export class StakePage extends React.Component {
         transaction,
     });
   };
-
+  /**
+   * 根据用户输入的报头：jsonInfo、私钥：keyProvider生成eos
+   * */
   getEos = () => {
     const values = this.props.form.getFieldsValue();
     const { keyProvider, jsonInfo } = values;
@@ -92,7 +98,9 @@ export class StakePage extends React.Component {
     });
     return eos;
   };
-
+  /**
+   * 用户点击生成报文，根据用户输入参数、选择的质押/解质押，生成签名报文，并将其赋值到文本框和生成对应的二维码
+   * */
   handleGetTransaction = () => {
     if (!this.state.GetTransactionButtonState) {
       return;
@@ -139,7 +147,9 @@ export class StakePage extends React.Component {
         });
     }
   };
-
+  /**
+   * 用户点击复制签名报文，将报文赋值到剪贴板，并提示用户已复制成功
+   * */
   handleCopyTransaction = () => {
     if (!this.state.CopyTransactionButtonState) {
       return;
@@ -149,7 +159,9 @@ export class StakePage extends React.Component {
     copy(transaction);
     this.openNotification();
   };
-
+  /**
+   * 提示用户已复制成功
+   * */
   openNotification = () => {
     notification.open({
       message: '已复制',
