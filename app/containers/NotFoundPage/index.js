@@ -5,16 +5,23 @@
  */
 
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
-
-import messages from './messages';
+import notFundImg from './images/404.gif';
 
 export default function NotFound() {
+  const LayoutContentBoxStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    minHeight: 480,
+    marginTop: 64,
+  };
+  const imgStyle = {
+    maxWidth: '100%',
+  };
   return (
-    <article>
-      <h1>
-        <FormattedMessage {...messages.header} />
-      </h1>
-    </article>
+    <div style={LayoutContentBoxStyle}>
+      <img alt="404" style={imgStyle} src={notFundImg} />
+    </div>
   );
 }
