@@ -116,8 +116,8 @@ export class StakePage extends React.Component {
         .delegatebw({
           from: accountName,
           receiver: accountName,
-          stake_net_quantity: `${stakeNetQuantity} SYS`,
-          stake_cpu_quantity: `${stakeCpuQuantity} SYS`,
+          stake_net_quantity: `${Number(stakeNetQuantity).toFixed(4)} EOS`,
+          stake_cpu_quantity: `${Number(stakeCpuQuantity).toFixed(4)} EOS`,
           transfer: 0,
         })
         .then(tr => {
@@ -134,8 +134,8 @@ export class StakePage extends React.Component {
         .undelegatebw({
           from: accountName,
           receiver: accountName,
-          unstake_net_quantity: `${stakeNetQuantity} SYS`,
-          unstake_cpu_quantity: `${stakeCpuQuantity} SYS`,
+          unstake_net_quantity: `${Number(stakeNetQuantity).toFixed(4)} EOS`,
+          unstake_cpu_quantity: `${Number(stakeCpuQuantity).toFixed(4)} EOS`,
         })
         .then(tr => {
           this.props.form.setFieldsValue({

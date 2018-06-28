@@ -106,7 +106,7 @@ export class TransferPage extends React.Component {
       .transfer({
         from: FromAccountName,
         to: ToAccountName,
-        quantity: `${transferQuantity} SYS`,
+        quantity: `${Number(transferQuantity).toFixed(4)} EOS`,
         memo: '',
       })
       .then(tr => {
