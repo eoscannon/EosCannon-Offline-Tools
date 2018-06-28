@@ -90,7 +90,7 @@ export class ProxyPage extends React.Component {
       .voteproducer({
         voter,
         proxy,
-        producers: '',
+        producers: [],
       })
       .then(tr => {
         this.props.form.setFieldsValue({
@@ -100,7 +100,24 @@ export class ProxyPage extends React.Component {
           GetTransactionButtonLoading: false,
           QrCodeValue: JSON.stringify(tr.transaction),
         });
+      })
+      .catch(err => {
+        this.setState({
+          GetTransactionButtonLoading: false,
+        });
+        console.log(err);
+        this.openTransactionFailNotification();
       });
+  };
+  /**
+   * 提示用户签名失败
+   * */
+  openTransactionFailNotification = () => {
+    notification.error({
+      message: '生成签名报文失败',
+      description: `请重新获取签名报文`,
+      duration: 3,
+    });
   };
   /**
    * 用户点击复制签名报文，将报文赋值到剪贴板，并提示用户已复制成功
@@ -118,7 +135,7 @@ export class ProxyPage extends React.Component {
    * 提示用户已复制成功
    * */
   openNotification = () => {
-    notification.open({
+    notification.success({
       message: '已复制',
       description: `已将签名报文复制到剪贴板，请前往 ${onLineAddress} 联网将报文播报发送`,
       duration: null,
