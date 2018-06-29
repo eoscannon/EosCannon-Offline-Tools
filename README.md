@@ -30,5 +30,5 @@ EOS佳能离线工具是由EOS佳能主导，为保护数字货币投资者安�
 ##### 最后：使用联网设备
 1. 在[https://tool.eoscannon.io/](https://tool.eoscannon.io/)页面的发送交易输入框粘贴已复制的签名报文
 2. 点击 **发送已签名报文** 按钮
-3. ![image](https://raw.githubusercontent.com/eoscannon/EosCannon-Offline-Tools/master/docs/stepImg/1.1.jpeg)
+3. ![image](https://raw.githubusercontent.com/eoscannon/EosCannon-Offline-Tools/master/docs/stepImg/1.2.jpeg)
 4. 根据提示确认是否交易成功
