@@ -128,12 +128,13 @@ export class StakePage extends React.Component {
             GetTransactionButtonLoading: false,
             QrCodeValue: JSON.stringify(tr.transaction),
           });
+          this.openTransactionSuccessNotification();
         })
         .catch(err => {
           this.setState({
             GetTransactionButtonLoading: false,
           });
-          console.log(err);
+          this.openTransactionFailNotification(err.error.what);
         });
     } else {
       eos
@@ -150,23 +151,33 @@ export class StakePage extends React.Component {
           this.setState({
             GetTransactionButtonLoading: false,
           });
+          this.openTransactionSuccessNotification();
         })
         .catch(err => {
           this.setState({
             GetTransactionButtonLoading: false,
           });
-          console.log(err);
-          this.openTransactionFailNotification();
+          this.openTransactionFailNotification(err.error.what);
         });
     }
   };
   /**
+   * 提示用户签名成功
+   * */
+  openTransactionSuccessNotification = () => {
+    notification.success({
+      message: '生成签名报文成功',
+      description: `请点击下面的复制签名报文按钮或者扫描二维码获取签名报文`,
+      duration: 3,
+    });
+  };
+  /**
    * 提示用户签名失败
    * */
-  openTransactionFailNotification = () => {
+  openTransactionFailNotification = what => {
     notification.error({
       message: '生成签名报文失败',
-      description: `请重新获取签名报文`,
+      description: `${what}，请重新获取签名报文`,
       duration: 3,
     });
   };
@@ -189,7 +200,7 @@ export class StakePage extends React.Component {
     notification.success({
       message: '已复制',
       description: `已将签名报文复制到剪贴板，请前往 ${onLineAddress} 联网将报文播报发送`,
-      duration: null,
+      duration: 3,
     });
   };
 
