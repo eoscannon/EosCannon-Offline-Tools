@@ -101,13 +101,18 @@ export class TransferPage extends React.Component {
     });
     const eos = this.getEos();
     const values = this.props.form.getFieldsValue();
-    const { FromAccountName, ToAccountName, transferQuantity } = values;
+    const {
+      FromAccountName,
+      ToAccountName,
+      transferQuantity,
+      transferMemo,
+    } = values;
     eos
       .transfer({
         from: FromAccountName,
         to: ToAccountName,
         quantity: `${Number(transferQuantity).toFixed(4)} EOS`,
-        memo: '',
+        memo: transferMemo || '',
       })
       .then(tr => {
         this.props.form.setFieldsValue({
@@ -248,6 +253,23 @@ export class TransferPage extends React.Component {
                     />
                   }
                   placeholder="请输入转账的数量"
+                />,
+              )}
+            </FormItem>
+            <FormItem>
+              {getFieldDecorator('transferMemo', {
+                rules: [
+                  { required: false, message: '请输入Memo，交易所转账必填!' },
+                ],
+              })(
+                <Input
+                  prefix={
+                    <Icon
+                      type="pay-circle-o"
+                      style={{ color: 'rgba(0,0,0,.25)' }}
+                    />
+                  }
+                  placeholder="请输入Memo，交易所转账必填!"
                 />,
               )}
             </FormItem>
