@@ -51,7 +51,6 @@ export class StakePage extends React.Component {
     const values = nextProps.form.getFieldsValue();
     const {
       jsonInfo,
-      keyProvider,
       accountName,
       stakeNetQuantity,
       stakeCpuQuantity,
@@ -60,7 +59,6 @@ export class StakePage extends React.Component {
     this.setState({
       GetTransactionButtonState:
         jsonInfo &&
-        keyProvider &&
         accountName &&
         stakeNetQuantity &&
         stakeCpuQuantity,
@@ -68,7 +66,6 @@ export class StakePage extends React.Component {
     this.setState({
       CopyTransactionButtonState:
         jsonInfo &&
-        keyProvider &&
         accountName &&
         stakeNetQuantity &&
         stakeCpuQuantity &&
@@ -80,7 +77,7 @@ export class StakePage extends React.Component {
    * */
   getEos = () => {
     const values = this.props.form.getFieldsValue();
-    const { keyProvider, jsonInfo } = values;
+    const { jsonInfo } = values;
     const newJsonInfo = jsonInfo
       .replace('ref_block_num', 'refBlockNum')
       .replace('ref_block_prefix', 'refBlockPrefix');
@@ -93,7 +90,6 @@ export class StakePage extends React.Component {
     const eos = EOS({
       httpEndpoint: null,
       chainId,
-      keyProvider,
       transactionHeaders,
     });
     return eos;
@@ -111,6 +107,8 @@ export class StakePage extends React.Component {
     const eos = this.getEos();
     const values = this.props.form.getFieldsValue();
     const { accountName, stakeNetQuantity, stakeCpuQuantity } = values;
+
+    let options = {sign: false};
     if (this.state.isDelegatebw) {
       eos
         .delegatebw({
@@ -119,7 +117,7 @@ export class StakePage extends React.Component {
           stake_net_quantity: `${Number(stakeNetQuantity).toFixed(4)} EOS`,
           stake_cpu_quantity: `${Number(stakeCpuQuantity).toFixed(4)} EOS`,
           transfer: 0,
-        })
+        }, options)
         .then(tr => {
           this.props.form.setFieldsValue({
             transaction: JSON.stringify(tr.transaction),
@@ -143,7 +141,7 @@ export class StakePage extends React.Component {
           receiver: accountName,
           unstake_net_quantity: `${Number(stakeNetQuantity).toFixed(4)} EOS`,
           unstake_cpu_quantity: `${Number(stakeCpuQuantity).toFixed(4)} EOS`,
-        })
+        }, options)
         .then(tr => {
           this.props.form.setFieldsValue({
             transaction: JSON.stringify(tr.transaction),
@@ -229,7 +227,7 @@ export class StakePage extends React.Component {
             </FormItem>
             <FormItem>
               <Alert
-                message="请输入为生成签名报文所需的字段"
+                message="请输入为生成待签名报文所需的字段"
                 description="该页面为离线页面，输入的字段不会向外界泄露，请放心输入。"
                 type="info"
                 closable
@@ -242,18 +240,6 @@ export class StakePage extends React.Component {
                 defaultChecked={this.state.isDelegatebw}
                 onChange={this.onSwitchChange}
               />
-            </FormItem>
-            <FormItem>
-              {getFieldDecorator('keyProvider', {
-                rules: [{ required: true, message: '请输入私钥!' }],
-              })(
-                <Input
-                  prefix={
-                    <Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />
-                  }
-                  placeholder="请输入私钥"
-                />,
-              )}
             </FormItem>
             <FormItem>
               {getFieldDecorator('accountName', {
@@ -305,22 +291,14 @@ export class StakePage extends React.Component {
                 loading={this.state.GetTransactionButtonLoading}
                 disabled={!this.state.GetTransactionButtonState}
               >
-                生成签名报文
+                生成待签名报文
               </Button>
             </FormItem>
             <FormItem>
-              <Alert
-                message="复制签名报文/扫描二维码"
-                description={transactionInfoDescription}
-                type="info"
-                closable
-              />
-            </FormItem>
-            <FormItem>
               {getFieldDecorator('transaction', {
-                rules: [{ required: true, message: '请复制生成的签名报文!' }],
+                rules: [{ required: true, message: '请复制生成的待签名报文!' }],
               })(
-                <TextArea disabled="true" placeholder="请复制生成的签名报文" />,
+                <TextArea disabled="true" placeholder="请复制生成的待签名报文" />,
               )}
             </FormItem>
             <FormItem>
@@ -335,7 +313,7 @@ export class StakePage extends React.Component {
                 disabled={!this.state.CopyTransactionButtonState}
                 onClick={this.handleCopyTransaction}
               >
-                复制签名报文
+                复制报文
               </Button>
             </FormItem>
           </FormComp>

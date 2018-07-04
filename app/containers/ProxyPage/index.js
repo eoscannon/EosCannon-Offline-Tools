@@ -40,13 +40,13 @@ export class ProxyPage extends React.Component {
    * */
   onValuesChange = nextProps => {
     const values = nextProps.form.getFieldsValue();
-    const { jsonInfo, keyProvider, voter, proxy, transaction } = values;
+    const { jsonInfo, voter, proxy, transaction } = values;
     this.setState({
-      GetTransactionButtonState: jsonInfo && keyProvider && voter && proxy,
+      GetTransactionButtonState: jsonInfo && voter && proxy,
     });
     this.setState({
       CopyTransactionButtonState:
-        jsonInfo && keyProvider && voter && proxy && transaction,
+        jsonInfo && voter && proxy && transaction,
     });
   };
   /**
@@ -54,7 +54,7 @@ export class ProxyPage extends React.Component {
    * */
   getEos = () => {
     const values = this.props.form.getFieldsValue();
-    const { keyProvider, jsonInfo } = values;
+    const { jsonInfo } = values;
     const newJsonInfo = jsonInfo
       .replace('ref_block_num', 'refBlockNum')
       .replace('ref_block_prefix', 'refBlockPrefix');
@@ -67,7 +67,6 @@ export class ProxyPage extends React.Component {
     const eos = EOS({
       httpEndpoint: null,
       chainId,
-      keyProvider,
       transactionHeaders,
     });
     return eos;
@@ -85,12 +84,13 @@ export class ProxyPage extends React.Component {
     const eos = this.getEos();
     const values = this.props.form.getFieldsValue();
     const { voter, proxy } = values;
+    let options = {sign: false};
     eos
       .voteproducer({
         voter,
         proxy,
         producers: [],
-      })
+      }, options)
       .then(tr => {
         this.props.form.setFieldsValue({
           transaction: JSON.stringify(tr.transaction),
@@ -176,23 +176,11 @@ export class ProxyPage extends React.Component {
             </FormItem>
             <FormItem>
               <Alert
-                message="请输入为生成签名报文所需的字段"
+                message="请输入为生成待签名报文所需的字段"
                 description="该页面为离线页面，输入的字段不会向外界泄露，请放心输入。"
                 type="info"
                 closable
               />
-            </FormItem>
-            <FormItem>
-              {getFieldDecorator('keyProvider', {
-                rules: [{ required: true, message: '请输入私钥!' }],
-              })(
-                <Input
-                  prefix={
-                    <Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />
-                  }
-                  placeholder="请输入私钥"
-                />,
-              )}
             </FormItem>
             <FormItem>
               {getFieldDecorator('voter', {
@@ -226,22 +214,14 @@ export class ProxyPage extends React.Component {
                 loading={this.state.GetTransactionButtonLoading}
                 disabled={!this.state.GetTransactionButtonState}
               >
-                生成签名报文
+                生成待签名报文
               </Button>
             </FormItem>
             <FormItem>
-              <Alert
-                message="复制签名报文/扫描二维码"
-                description={transactionInfoDescription}
-                type="info"
-                closable
-              />
-            </FormItem>
-            <FormItem>
               {getFieldDecorator('transaction', {
-                rules: [{ required: true, message: '请复制生成的签名报文!' }],
+                rules: [{ required: true, message: '请复制生成的待签名报文!' }],
               })(
-                <TextArea disabled="true" placeholder="请复制生成的签名报文" />,
+                <TextArea disabled="true" placeholder="请复制生成的待签名报文" />,
               )}
             </FormItem>
             <FormItem>
@@ -256,7 +236,7 @@ export class ProxyPage extends React.Component {
                 disabled={!this.state.CopyTransactionButtonState}
                 onClick={this.handleCopyTransaction}
               >
-                复制签名报文
+                复制报文
               </Button>
             </FormItem>
           </FormComp>
