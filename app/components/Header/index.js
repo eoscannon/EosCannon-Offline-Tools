@@ -29,6 +29,9 @@ export default class HeaderComp extends React.PureComponent {
       case '/transfer':
         defaultSelectedKeys = '3';
         break;
+      case '/refund':
+        defaultSelectedKeys = '4';
+        break;
       default:
         defaultSelectedKeys = '1';
     }
@@ -60,6 +63,11 @@ export default class HeaderComp extends React.PureComponent {
           <Menu.Item key="3">
             <Link href="/transfer" to="/transfer">
               转账
+            </Link>
+          </Menu.Item>
+          <Menu.Item key="4">
+            <Link href="/refund" to="/refund">
+              赎回
             </Link>
           </Menu.Item>
         </Menu>
