@@ -15,6 +15,7 @@ import StakePage from 'containers/StakePage/Loadable';
 import ProxyPage from 'containers/ProxyPage/Loadable';
 import TransferPage from 'containers/TransferPage/Loadable';
 import RefundPage from 'containers/RefundPage/Loadable';
+import BuyrambytesPage from 'containers/BuyrambytesPage/Loadable';
 import NotFoundPage from 'containers/NotFoundPage/Loadable';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
@@ -35,6 +36,7 @@ export default function App() {
         <Route path="/proxy" component={ProxyPage} />
         <Route path="/transfer" component={TransferPage} />
         <Route path="/refund" component={RefundPage} />
+        <Route path="/buyrambytes" component={BuyrambytesPage} />
         <Route path="" component={NotFoundPage} />
       </Switch>
       <Footer />

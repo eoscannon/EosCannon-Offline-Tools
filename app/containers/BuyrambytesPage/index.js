@@ -1,11 +1,11 @@
 /*
- * StakePage
+ * BuyrambytesPage
  *
  */
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Form, Icon, Input, Button, Alert, Switch, notification } from 'antd';
+import { Form, Icon, Input, Button, Alert, notification } from 'antd';
 import copy from 'copy-to-clipboard';
 import QRCode from 'qrcode.react';
 import { onLineAddress, getEos } from '../../utils/utils';
@@ -18,11 +18,10 @@ import {
 const FormItem = Form.Item;
 const { TextArea } = Input;
 
-export class StakePage extends React.Component {
+export class BuyrambytesPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isDelegatebw: true, // true：质押；false：解质押
       GetTransactionButtonLoading: false, // 点击获取报文时，按钮加载状态
       GetTransactionButtonState: false, // 获取报文按钮可点击状态
       CopyTransactionButtonState: false, // 复制报文按钮可点击状态
@@ -36,14 +35,6 @@ export class StakePage extends React.Component {
     this.onValuesChange(nextProps);
   }
   /**
-   * 用户选择质押/解质押
-   * */
-  onSwitchChange = checked => {
-    this.setState({
-      isDelegatebw: checked,
-    });
-  };
-  /**
    * 输入框内容变化时，改变按钮状态
    * */
   onValuesChange = nextProps => {
@@ -51,31 +42,31 @@ export class StakePage extends React.Component {
     const {
       jsonInfo,
       keyProvider,
-      FromAccountName,
-      stakeNetQuantity,
-      stakeCpuQuantity,
+      PayerAccountName,
+      ReceiverAccountName,
+      BytesQuantity,
       transaction,
     } = values;
     this.setState({
       GetTransactionButtonState:
         jsonInfo &&
         keyProvider &&
-        FromAccountName &&
-        stakeNetQuantity &&
-        stakeCpuQuantity,
+        PayerAccountName &&
+        ReceiverAccountName &&
+        BytesQuantity,
     });
     this.setState({
       CopyTransactionButtonState:
         jsonInfo &&
         keyProvider &&
-        FromAccountName &&
-        stakeNetQuantity &&
-        stakeCpuQuantity &&
+        PayerAccountName &&
+        ReceiverAccountName &&
+        BytesQuantity &&
         transaction,
     });
   };
   /**
-   * 用户点击生成报文，根据用户输入参数、选择的质押/解质押，生成签名报文，并将其赋值到文本框和生成对应的二维码
+   * 用户点击生成报文，根据用户输入参数，生成签名报文，并将其赋值到文本框和生成对应的二维码
    * */
   handleGetTransaction = () => {
     if (!this.state.GetTransactionButtonState) {
@@ -86,61 +77,43 @@ export class StakePage extends React.Component {
     });
     const values = this.props.form.getFieldsValue();
     const eos = getEos(values);
-    const {
-      FromAccountName,
-      ReceiverAccountName,
-      stakeNetQuantity,
-      stakeCpuQuantity,
-    } = values;
-    if (this.state.isDelegatebw) {
-      eos
-        .delegatebw({
-          from: FromAccountName,
-          receiver: ReceiverAccountName || FromAccountName,
-          stake_net_quantity: `${Number(stakeNetQuantity).toFixed(4)} EOS`,
-          stake_cpu_quantity: `${Number(stakeCpuQuantity).toFixed(4)} EOS`,
-          transfer: 0,
-        })
-        .then(tr => {
-          this.props.form.setFieldsValue({
-            transaction: JSON.stringify(tr.transaction),
-          });
-          this.setState({
-            GetTransactionButtonLoading: false,
-            QrCodeValue: JSON.stringify(tr.transaction),
-          });
-          this.openTransactionSuccessNotification();
-        })
-        .catch(err => {
-          this.setState({
-            GetTransactionButtonLoading: false,
-          });
-          this.openTransactionFailNotification(err.error.what);
+    const { PayerAccountName, ReceiverAccountName, BytesQuantity } = values;
+    eos
+      .transaction({
+        actions: [
+          {
+            account: 'eosio',
+            name: 'buyrambytes',
+            authorization: [
+              {
+                actor: PayerAccountName,
+                permission: 'active',
+              },
+            ],
+            data: {
+              payer: PayerAccountName,
+              receiver: ReceiverAccountName,
+              bytes: Number(BytesQuantity),
+            },
+          },
+        ],
+      })
+      .then(tr => {
+        this.props.form.setFieldsValue({
+          transaction: JSON.stringify(tr.transaction),
         });
-    } else {
-      eos
-        .undelegatebw({
-          from: FromAccountName,
-          receiver: ReceiverAccountName,
-          unstake_net_quantity: `${Number(stakeNetQuantity).toFixed(4)} EOS`,
-          unstake_cpu_quantity: `${Number(stakeCpuQuantity).toFixed(4)} EOS`,
-        })
-        .then(tr => {
-          this.props.form.setFieldsValue({
-            transaction: JSON.stringify(tr.transaction),
-          });
-          this.setState({
-            GetTransactionButtonLoading: false,
-          });
-          this.openTransactionSuccessNotification();
-        })
-        .catch(err => {
-          this.setState({
-            GetTransactionButtonLoading: false,
-          });
-          this.openTransactionFailNotification(err.error.what);
+        this.setState({
+          GetTransactionButtonLoading: false,
+          QrCodeValue: JSON.stringify(tr.transaction),
         });
-    }
+        this.openTransactionSuccessNotification();
+      })
+      .catch(err => {
+        this.setState({
+          GetTransactionButtonLoading: false,
+        });
+        this.openTransactionFailNotification(err.error.what);
+      });
   };
   /**
    * 提示用户签名成功
@@ -189,18 +162,6 @@ export class StakePage extends React.Component {
     const { getFieldDecorator } = this.props.form;
     const jsonInfoDescription = `请前往 ${onLineAddress} 获取json字段，联网打开网页，即可获得。复制json字段，将其粘贴在免得输入框中即可。`;
     const transactionInfoDescription = `请将下面的签名报文复制后，前往 ${onLineAddress} 联网后进行播报发送。`;
-    const FromAccountNamePlaceholder = this.state.isDelegatebw
-      ? '请输入用于质押的账户名'
-      : '请输入用于解质押的账户名';
-    const ReceiverAccountNamePlaceholder = this.state.isDelegatebw
-      ? '请输入接受质押的账户名，不填，则默认使用用于质押的账户名'
-      : '请输入接受解质押的账户名，不填，则默认使用用于解质押的账户名';
-    const StakeNetQuantityPlaceholder = this.state.isDelegatebw
-      ? '请输入质押的Net数量'
-      : '请输入解质押的Net数量';
-    const StakeCpuQuantityPlaceholder = this.state.isDelegatebw
-      ? '请输入质押的Cpu数量'
-      : '请输入解质押的Cpu数量';
     return (
       <LayoutContent>
         <LayoutContentBox>
@@ -229,14 +190,6 @@ export class StakePage extends React.Component {
               />
             </FormItem>
             <FormItem>
-              <Switch
-                checkedChildren="质押"
-                unCheckedChildren="解质押"
-                defaultChecked={this.state.isDelegatebw}
-                onChange={this.onSwitchChange}
-              />
-            </FormItem>
-            <FormItem>
               {getFieldDecorator('keyProvider', {
                 rules: [{ required: true, message: '请输入私钥!' }],
               })(
@@ -249,16 +202,19 @@ export class StakePage extends React.Component {
               )}
             </FormItem>
             <FormItem>
-              {getFieldDecorator('FromAccountName', {
+              {getFieldDecorator('PayerAccountName', {
                 rules: [
-                  { required: true, message: FromAccountNamePlaceholder },
+                  {
+                    required: true,
+                    message: '请输入用于支付购买内存的账户名!',
+                  },
                 ],
               })(
                 <Input
                   prefix={
                     <Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />
                   }
-                  placeholder={FromAccountNamePlaceholder}
+                  placeholder="请输入用于支付购买内存的账户名"
                 />,
               )}
             </FormItem>
@@ -267,7 +223,7 @@ export class StakePage extends React.Component {
                 rules: [
                   {
                     required: true,
-                    message: ReceiverAccountNamePlaceholder,
+                    message: '请输入用于接受所购买内存的账户名!',
                   },
                 ],
               })(
@@ -275,16 +231,16 @@ export class StakePage extends React.Component {
                   prefix={
                     <Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />
                   }
-                  placeholder={ReceiverAccountNamePlaceholder}
+                  placeholder="请输入用于接受所购买内存的账户名"
                 />,
               )}
             </FormItem>
             <FormItem>
-              {getFieldDecorator('stakeNetQuantity', {
+              {getFieldDecorator('BytesQuantity', {
                 rules: [
                   {
                     required: true,
-                    message: StakeNetQuantityPlaceholder,
+                    message: '请输入购买内存的数量!',
                   },
                 ],
               })(
@@ -295,27 +251,7 @@ export class StakePage extends React.Component {
                       style={{ color: 'rgba(0,0,0,.25)' }}
                     />
                   }
-                  placeholder={StakeNetQuantityPlaceholder}
-                />,
-              )}
-            </FormItem>
-            <FormItem>
-              {getFieldDecorator('stakeCpuQuantity', {
-                rules: [
-                  {
-                    required: true,
-                    message: StakeCpuQuantityPlaceholder,
-                  },
-                ],
-              })(
-                <Input
-                  prefix={
-                    <Icon
-                      type="pay-circle-o"
-                      style={{ color: 'rgba(0,0,0,.25)' }}
-                    />
-                  }
-                  placeholder={StakeCpuQuantityPlaceholder}
+                  placeholder="请输入购买内存的数量"
                 />,
               )}
             </FormItem>
@@ -367,10 +303,10 @@ export class StakePage extends React.Component {
   }
 }
 
-StakePage.propTypes = {
+BuyrambytesPage.propTypes = {
   form: PropTypes.object,
 };
 
-const StakePageForm = Form.create()(StakePage);
+const BuyrambytesPageForm = Form.create()(BuyrambytesPage);
 
-export default StakePageForm;
+export default BuyrambytesPageForm;
