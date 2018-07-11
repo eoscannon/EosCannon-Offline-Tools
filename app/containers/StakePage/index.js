@@ -6,10 +6,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Form, Icon, Input, Button, Alert, Switch, notification } from 'antd';
-import EOS from 'eosjs';
 import copy from 'copy-to-clipboard';
 import QRCode from 'qrcode.react';
-import { chainId, onLineAddress } from '../../utils/config';
+import { getOnLineAddress, getEos } from '../../utils/utils';
 import {
   LayoutContentBox,
   LayoutContent,
@@ -18,6 +17,7 @@ import {
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
+const onLineAddress = getOnLineAddress();
 
 export class StakePage extends React.Component {
   constructor(props) {
@@ -76,29 +76,6 @@ export class StakePage extends React.Component {
     });
   };
   /**
-   * 根据用户输入的报头：jsonInfo、私钥：keyProvider生成eos
-   * */
-  getEos = () => {
-    const values = this.props.form.getFieldsValue();
-    const { keyProvider, jsonInfo } = values;
-    const newJsonInfo = jsonInfo
-      .replace('ref_block_num', 'refBlockNum')
-      .replace('ref_block_prefix', 'refBlockPrefix');
-    const { refBlockNum, refBlockPrefix, expiration } = JSON.parse(newJsonInfo);
-    const transactionHeaders = {
-      expiration,
-      ref_block_num: refBlockNum,
-      ref_block_prefix: refBlockPrefix,
-    };
-    const eos = EOS({
-      httpEndpoint: null,
-      chainId,
-      keyProvider,
-      transactionHeaders,
-    });
-    return eos;
-  };
-  /**
    * 用户点击生成报文，根据用户输入参数、选择的质押/解质押，生成签名报文，并将其赋值到文本框和生成对应的二维码
    * */
   handleGetTransaction = () => {
@@ -108,8 +85,8 @@ export class StakePage extends React.Component {
     this.setState({
       GetTransactionButtonLoading: true,
     });
-    const eos = this.getEos();
     const values = this.props.form.getFieldsValue();
+    const eos = getEos(values);
     const { accountName, stakeNetQuantity, stakeCpuQuantity } = values;
     if (this.state.isDelegatebw) {
       eos

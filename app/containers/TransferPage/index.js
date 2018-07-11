@@ -8,8 +8,7 @@ import PropTypes from 'prop-types';
 import { Form, Icon, Input, Button, Alert, notification } from 'antd';
 import copy from 'copy-to-clipboard';
 import QRCode from 'qrcode.react';
-import EOS from 'eosjs';
-import { chainId, onLineAddress } from '../../utils/config';
+import { getOnLineAddress, getEos } from '../../utils/utils';
 import {
   LayoutContentBox,
   LayoutContent,
@@ -18,6 +17,7 @@ import {
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
+const onLineAddress = getOnLineAddress();
 
 export class TransferPage extends React.Component {
   constructor(props) {
@@ -45,7 +45,9 @@ export class TransferPage extends React.Component {
       keyProvider,
       FromAccountName,
       ToAccountName,
+      transferContract,
       transferQuantity,
+      transferSymbol,
       transaction,
     } = values;
     this.setState({
@@ -54,7 +56,9 @@ export class TransferPage extends React.Component {
         keyProvider &&
         FromAccountName &&
         ToAccountName &&
-        transferQuantity,
+        transferContract &&
+        transferQuantity &&
+        transferSymbol,
     });
     this.setState({
       CopyTransactionButtonState:
@@ -62,32 +66,11 @@ export class TransferPage extends React.Component {
         keyProvider &&
         FromAccountName &&
         ToAccountName &&
+        transferContract &&
         transferQuantity &&
+        transferSymbol &&
         transaction,
     });
-  };
-  /**
-   * 根据用户输入的报头：jsonInfo、私钥：keyProvider生成eos
-   * */
-  getEos = () => {
-    const values = this.props.form.getFieldsValue();
-    const { keyProvider, jsonInfo } = values;
-    const newJsonInfo = jsonInfo
-      .replace('ref_block_num', 'refBlockNum')
-      .replace('ref_block_prefix', 'refBlockPrefix');
-    const { refBlockNum, refBlockPrefix, expiration } = JSON.parse(newJsonInfo);
-    const transactionHeaders = {
-      expiration,
-      ref_block_num: refBlockNum,
-      ref_block_prefix: refBlockPrefix,
-    };
-    const eos = EOS({
-      httpEndpoint: null,
-      chainId,
-      keyProvider,
-      transactionHeaders,
-    });
-    return eos;
   };
   /**
    * 用户点击生成报文，根据用户输入参数，生成签名报文，并将其赋值到文本框和生成对应的二维码
@@ -99,20 +82,38 @@ export class TransferPage extends React.Component {
     this.setState({
       GetTransactionButtonLoading: true,
     });
-    const eos = this.getEos();
     const values = this.props.form.getFieldsValue();
+    const eos = getEos(values);
     const {
       FromAccountName,
       ToAccountName,
+      transferContract,
       transferQuantity,
       transferMemo,
+      transferSymbol,
     } = values;
     eos
-      .transfer({
-        from: FromAccountName,
-        to: ToAccountName,
-        quantity: `${Number(transferQuantity).toFixed(4)} EOS`,
-        memo: transferMemo || '',
+      .transaction({
+        actions: [
+          {
+            account: transferContract,
+            name: 'transfer',
+            authorization: [
+              {
+                actor: FromAccountName,
+                permission: 'active',
+              },
+            ],
+            data: {
+              from: FromAccountName,
+              to: ToAccountName,
+              quantity: `${Number(transferQuantity).toFixed(
+                4,
+              )} ${transferSymbol.toUpperCase()}`,
+              memo: transferMemo || '',
+            },
+          },
+        ],
       })
       .then(tr => {
         this.props.form.setFieldsValue({
@@ -242,6 +243,22 @@ export class TransferPage extends React.Component {
               )}
             </FormItem>
             <FormItem>
+              {getFieldDecorator('transferContract', {
+                initialValue: 'eosio.token',
+                rules: [{ required: false, message: '请输入Contract!' }],
+              })(
+                <Input
+                  prefix={
+                    <Icon
+                      type="pay-circle-o"
+                      style={{ color: 'rgba(0,0,0,.25)' }}
+                    />
+                  }
+                  placeholder="请输入Contract!"
+                />,
+              )}
+            </FormItem>
+            <FormItem>
               {getFieldDecorator('transferQuantity', {
                 rules: [{ required: true, message: '请输入转账的数量!' }],
               })(
@@ -253,6 +270,22 @@ export class TransferPage extends React.Component {
                     />
                   }
                   placeholder="请输入转账的数量"
+                />,
+              )}
+            </FormItem>
+            <FormItem>
+              {getFieldDecorator('transferSymbol', {
+                initialValue: 'EOS',
+                rules: [{ required: false, message: '请输入Symbol!' }],
+              })(
+                <Input
+                  prefix={
+                    <Icon
+                      type="pay-circle-o"
+                      style={{ color: 'rgba(0,0,0,.25)' }}
+                    />
+                  }
+                  placeholder="请输入Symbol!"
                 />,
               )}
             </FormItem>

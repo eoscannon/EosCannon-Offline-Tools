@@ -1,5 +1,5 @@
 /*
- * ProxyPage
+ * TransferPage
  *
  */
 
@@ -19,7 +19,7 @@ const FormItem = Form.Item;
 const { TextArea } = Input;
 const onLineAddress = getOnLineAddress();
 
-export class ProxyPage extends React.Component {
+export class RefundPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -40,13 +40,13 @@ export class ProxyPage extends React.Component {
    * */
   onValuesChange = nextProps => {
     const values = nextProps.form.getFieldsValue();
-    const { jsonInfo, keyProvider, voter, proxy, transaction } = values;
+    const { jsonInfo, keyProvider, AccountName, transaction } = values;
     this.setState({
-      GetTransactionButtonState: jsonInfo && keyProvider && voter && proxy,
+      GetTransactionButtonState: jsonInfo && keyProvider && AccountName,
     });
     this.setState({
       CopyTransactionButtonState:
-        jsonInfo && keyProvider && voter && proxy && transaction,
+        jsonInfo && keyProvider && AccountName && transaction,
     });
   };
   /**
@@ -61,12 +61,10 @@ export class ProxyPage extends React.Component {
     });
     const values = this.props.form.getFieldsValue();
     const eos = getEos(values);
-    const { voter, proxy } = values;
+    const { AccountName } = values;
     eos
-      .voteproducer({
-        voter,
-        proxy,
-        producers: [],
+      .refund({
+        owner: AccountName,
       })
       .then(tr => {
         this.props.form.setFieldsValue({
@@ -172,26 +170,14 @@ export class ProxyPage extends React.Component {
               )}
             </FormItem>
             <FormItem>
-              {getFieldDecorator('voter', {
-                rules: [{ required: true, message: '请输入您投票的账户名!' }],
+              {getFieldDecorator('AccountName', {
+                rules: [{ required: true, message: '请输入私钥对应的账户名!' }],
               })(
                 <Input
                   prefix={
                     <Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />
                   }
-                  placeholder="请输入您投票的账户名"
-                />,
-              )}
-            </FormItem>
-            <FormItem>
-              {getFieldDecorator('proxy', {
-                rules: [{ required: true, message: '请输入代理投票的账户名!' }],
-              })(
-                <Input
-                  prefix={
-                    <Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />
-                  }
-                  placeholder="请输入代理投票的账户名"
+                  placeholder="请输入私钥对应的账户名"
                 />,
               )}
             </FormItem>
@@ -243,10 +229,10 @@ export class ProxyPage extends React.Component {
   }
 }
 
-ProxyPage.propTypes = {
+RefundPage.propTypes = {
   form: PropTypes.object,
 };
 
-const ProxyPageForm = Form.create()(ProxyPage);
+const RefundPageForm = Form.create()(RefundPage);
 
-export default ProxyPageForm;
+export default RefundPageForm;

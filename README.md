@@ -7,13 +7,16 @@ EOS佳能离线工具是由EOS佳能主导，为保护数字货币投资者安�
 免责声明：该工具仅供学习、交流，不对使用过程中产生的收益、损失负责，请知悉。
 
 ## 使用方法：
-准备两台设备：离线设备、联网设备；已安装node环境，node安装：[https://nodejs.org/zh-cn/](https://nodejs.org/zh-cn/)
-##### 首先：使用离线设备 
+准备两台设备：离线设备、联网设备
+##### 首先：使用离线设备 （"重新build"、"使用已build的文件"，选择其中一种方式）
+###### 重新build：
 1. 下载项目，打开控制台
 2. cd 项目根目录
 3. npm install
 4. npm start
 5. 在浏览器地址栏输入：[http://localhost:3000](http://localhost:3000)
+###### 使用已build的文件：
+1.下载build.zip文件，解压后，打开index.html，浏览器打开即可使用。
 ##### 然后：使用联网设备 
 1. 打开 [https://tool.eoscannon.io/](https://tool.eoscannon.io/)
 2. 点击 **复制初始化信息** 按钮
