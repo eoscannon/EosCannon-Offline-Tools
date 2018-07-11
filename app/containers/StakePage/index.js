@@ -51,7 +51,7 @@ export class StakePage extends React.Component {
     const {
       jsonInfo,
       keyProvider,
-      accountName,
+      FromAccountName,
       stakeNetQuantity,
       stakeCpuQuantity,
       transaction,
@@ -60,7 +60,7 @@ export class StakePage extends React.Component {
       GetTransactionButtonState:
         jsonInfo &&
         keyProvider &&
-        accountName &&
+        FromAccountName &&
         stakeNetQuantity &&
         stakeCpuQuantity,
     });
@@ -68,7 +68,7 @@ export class StakePage extends React.Component {
       CopyTransactionButtonState:
         jsonInfo &&
         keyProvider &&
-        accountName &&
+        FromAccountName &&
         stakeNetQuantity &&
         stakeCpuQuantity &&
         transaction,
@@ -86,12 +86,17 @@ export class StakePage extends React.Component {
     });
     const values = this.props.form.getFieldsValue();
     const eos = getEos(values);
-    const { accountName, stakeNetQuantity, stakeCpuQuantity } = values;
+    const {
+      FromAccountName,
+      ReceiverAccountName,
+      stakeNetQuantity,
+      stakeCpuQuantity,
+    } = values;
     if (this.state.isDelegatebw) {
       eos
         .delegatebw({
-          from: accountName,
-          receiver: accountName,
+          from: FromAccountName,
+          receiver: ReceiverAccountName || FromAccountName,
           stake_net_quantity: `${Number(stakeNetQuantity).toFixed(4)} EOS`,
           stake_cpu_quantity: `${Number(stakeCpuQuantity).toFixed(4)} EOS`,
           transfer: 0,
@@ -115,8 +120,8 @@ export class StakePage extends React.Component {
     } else {
       eos
         .undelegatebw({
-          from: accountName,
-          receiver: accountName,
+          from: FromAccountName,
+          receiver: ReceiverAccountName,
           unstake_net_quantity: `${Number(stakeNetQuantity).toFixed(4)} EOS`,
           unstake_cpu_quantity: `${Number(stakeCpuQuantity).toFixed(4)} EOS`,
         })
@@ -184,6 +189,18 @@ export class StakePage extends React.Component {
     const { getFieldDecorator } = this.props.form;
     const jsonInfoDescription = `请前往 ${onLineAddress} 获取json字段，联网打开网页，即可获得。复制json字段，将其粘贴在免得输入框中即可。`;
     const transactionInfoDescription = `请将下面的签名报文复制后，前往 ${onLineAddress} 联网后进行播报发送。`;
+    const FromAccountNamePlaceholder = this.state.isDelegatebw
+      ? '请输入用于质押的账户名'
+      : '请输入用于解质押的账户名';
+    const ReceiverAccountNamePlaceholder = this.state.isDelegatebw
+      ? '请输入接受质押的账户名，不填，则默认使用用于质押的账户名'
+      : '请输入接受解质押的账户名，不填，则默认使用用于解质押的账户名';
+    const StakeNetQuantityPlaceholder = this.state.isDelegatebw
+      ? '请输入质押的Net数量'
+      : '请输入解质押的Net数量';
+    const StakeCpuQuantityPlaceholder = this.state.isDelegatebw
+      ? '请输入质押的Cpu数量'
+      : '请输入解质押的Cpu数量';
     return (
       <LayoutContent>
         <LayoutContentBox>
@@ -232,20 +249,44 @@ export class StakePage extends React.Component {
               )}
             </FormItem>
             <FormItem>
-              {getFieldDecorator('accountName', {
-                rules: [{ required: true, message: '请输入账户名!' }],
+              {getFieldDecorator('FromAccountName', {
+                rules: [
+                  { required: true, message: FromAccountNamePlaceholder },
+                ],
               })(
                 <Input
                   prefix={
                     <Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />
                   }
-                  placeholder="请输入账户名"
+                  placeholder={FromAccountNamePlaceholder}
+                />,
+              )}
+            </FormItem>
+            <FormItem>
+              {getFieldDecorator('ReceiverAccountName', {
+                rules: [
+                  {
+                    required: true,
+                    message: ReceiverAccountNamePlaceholder,
+                  },
+                ],
+              })(
+                <Input
+                  prefix={
+                    <Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />
+                  }
+                  placeholder={ReceiverAccountNamePlaceholder}
                 />,
               )}
             </FormItem>
             <FormItem>
               {getFieldDecorator('stakeNetQuantity', {
-                rules: [{ required: true, message: '请输入质押的Net数量!' }],
+                rules: [
+                  {
+                    required: true,
+                    message: StakeNetQuantityPlaceholder,
+                  },
+                ],
               })(
                 <Input
                   prefix={
@@ -254,13 +295,18 @@ export class StakePage extends React.Component {
                       style={{ color: 'rgba(0,0,0,.25)' }}
                     />
                   }
-                  placeholder="请输入质押的Net数量"
+                  placeholder={StakeNetQuantityPlaceholder}
                 />,
               )}
             </FormItem>
             <FormItem>
               {getFieldDecorator('stakeCpuQuantity', {
-                rules: [{ required: true, message: '请输入质押的Cpu数量!' }],
+                rules: [
+                  {
+                    required: true,
+                    message: StakeCpuQuantityPlaceholder,
+                  },
+                ],
               })(
                 <Input
                   prefix={
@@ -269,7 +315,7 @@ export class StakePage extends React.Component {
                       style={{ color: 'rgba(0,0,0,.25)' }}
                     />
                   }
-                  placeholder="请输入质押的Cpu数量"
+                  placeholder={StakeCpuQuantityPlaceholder}
                 />,
               )}
             </FormItem>
