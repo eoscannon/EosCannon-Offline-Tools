@@ -22,7 +22,7 @@ export default class HeaderComp extends React.PureComponent {
    * */
   componentWillMount() {
     let defaultSelectedKeys = '1';
-    switch (window.location.pathname) {
+    switch (window.location.hash.substring(1)) {
       case '/proxy':
         defaultSelectedKeys = '2';
         break;
@@ -31,6 +31,9 @@ export default class HeaderComp extends React.PureComponent {
         break;
       case '/refund':
         defaultSelectedKeys = '4';
+        break;
+      case '/buyrambytes':
+        defaultSelectedKeys = '5';
         break;
       default:
         defaultSelectedKeys = '1';
@@ -68,6 +71,11 @@ export default class HeaderComp extends React.PureComponent {
           <Menu.Item key="4">
             <Link href="/refund" to="/refund">
               赎回
+            </Link>
+          </Menu.Item>
+          <Menu.Item key="5">
+            <Link href="/buyrambytes" to="/buyrambytes">
+              购买内存
             </Link>
           </Menu.Item>
         </Menu>
