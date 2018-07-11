@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 import { Form, Icon, Input, Button, Alert, Switch, notification } from 'antd';
 import copy from 'copy-to-clipboard';
 import QRCode from 'qrcode.react';
-import { getOnLineAddress, getEos } from '../../utils/utils';
+import { onLineAddress, getEos } from '../../utils/utils';
 import {
   LayoutContentBox,
   LayoutContent,
@@ -17,7 +17,6 @@ import {
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
-const onLineAddress = getOnLineAddress();
 
 export class StakePage extends React.Component {
   constructor(props) {
