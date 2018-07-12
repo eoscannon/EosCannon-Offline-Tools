@@ -115,7 +115,7 @@ export class StakePage extends React.Component {
           this.setState({
             GetTransactionButtonLoading: false,
           });
-          this.openTransactionFailNotification(err.error.what);
+          this.openTransactionFailNotification(err.name);
         });
     } else {
       eos
@@ -138,7 +138,7 @@ export class StakePage extends React.Component {
           this.setState({
             GetTransactionButtonLoading: false,
           });
-          this.openTransactionFailNotification(err.error.what);
+          this.openTransactionFailNotification(err.name);
         });
     }
   };

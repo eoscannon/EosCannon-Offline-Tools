@@ -122,7 +122,7 @@ export class BuyrambytesPage extends React.Component {
         this.setState({
           GetTransactionButtonLoading: false,
         });
-        this.openTransactionFailNotification(err.error.what);
+        this.openTransactionFailNotification(err.name);
       });
   };
   /**
