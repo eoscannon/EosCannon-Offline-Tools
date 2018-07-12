@@ -5,7 +5,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Form, Icon, Input, Button, Alert, notification } from 'antd';
+import { Form, Icon, Switch, Input, Button, Alert, notification } from 'antd';
 import copy from 'copy-to-clipboard';
 import QRCode from 'qrcode.react';
 import { onLineAddress, getEos } from '../../utils/utils';
@@ -22,6 +22,7 @@ export class BuyrambytesPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      isBuyRam: true,
       GetTransactionButtonLoading: false, // 点击获取报文时，按钮加载状态
       GetTransactionButtonState: false, // 获取报文按钮可点击状态
       CopyTransactionButtonState: false, // 复制报文按钮可点击状态
@@ -35,6 +36,14 @@ export class BuyrambytesPage extends React.Component {
     this.onValuesChange(nextProps);
   }
   /**
+   * 用户选择购买/出售
+   * */
+  onSwitchChange = checked => {
+    this.setState({
+      isBuyRam: checked,
+    });
+  };
+  /**
    * 输入框内容变化时，改变按钮状态
    * */
   onValuesChange = nextProps => {
@@ -43,24 +52,18 @@ export class BuyrambytesPage extends React.Component {
       jsonInfo,
       keyProvider,
       PayerAccountName,
-      ReceiverAccountName,
       BytesQuantity,
       transaction,
     } = values;
     this.setState({
       GetTransactionButtonState:
-        jsonInfo &&
-        keyProvider &&
-        PayerAccountName &&
-        ReceiverAccountName &&
-        BytesQuantity,
+        jsonInfo && keyProvider && PayerAccountName && BytesQuantity,
     });
     this.setState({
       CopyTransactionButtonState:
         jsonInfo &&
         keyProvider &&
         PayerAccountName &&
-        ReceiverAccountName &&
         BytesQuantity &&
         transaction,
     });
@@ -78,23 +81,30 @@ export class BuyrambytesPage extends React.Component {
     const values = this.props.form.getFieldsValue();
     const eos = getEos(values);
     const { PayerAccountName, ReceiverAccountName, BytesQuantity } = values;
+    const actionsName = this.state.isBuyRam ? 'buyrambytes' : 'sellram';
+    const data = this.state.isBuyRam
+      ? {
+          payer: PayerAccountName,
+          receiver: ReceiverAccountName || PayerAccountName,
+          bytes: Number(BytesQuantity),
+        }
+      : {
+          account: PayerAccountName,
+          bytes: Number(BytesQuantity),
+        };
     eos
       .transaction({
         actions: [
           {
             account: 'eosio',
-            name: 'buyrambytes',
+            name: actionsName,
             authorization: [
               {
                 actor: PayerAccountName,
                 permission: 'active',
               },
             ],
-            data: {
-              payer: PayerAccountName,
-              receiver: ReceiverAccountName,
-              bytes: Number(BytesQuantity),
-            },
+            data,
           },
         ],
       })
@@ -162,6 +172,9 @@ export class BuyrambytesPage extends React.Component {
     const { getFieldDecorator } = this.props.form;
     const jsonInfoDescription = `请前往 ${onLineAddress} 获取json字段，联网打开网页，即可获得。复制json字段，将其粘贴在免得输入框中即可。`;
     const transactionInfoDescription = `请将下面的签名报文复制后，前往 ${onLineAddress} 联网后进行播报发送。`;
+    const PayerAccountNamePlaceholder = this.state.isBuyRam
+      ? '请输入用于支付购买内存的账户名'
+      : '请输入用于出售内存的账户名';
     return (
       <LayoutContent>
         <LayoutContentBox>
@@ -190,6 +203,14 @@ export class BuyrambytesPage extends React.Component {
               />
             </FormItem>
             <FormItem>
+              <Switch
+                checkedChildren="购买"
+                unCheckedChildren="出售"
+                defaultChecked={this.state.isBuyRam}
+                onChange={this.onSwitchChange}
+              />
+            </FormItem>
+            <FormItem>
               {getFieldDecorator('keyProvider', {
                 rules: [{ required: true, message: '请输入私钥!' }],
               })(
@@ -206,7 +227,7 @@ export class BuyrambytesPage extends React.Component {
                 rules: [
                   {
                     required: true,
-                    message: '请输入用于支付购买内存的账户名!',
+                    message: PayerAccountNamePlaceholder,
                   },
                 ],
               })(
@@ -214,33 +235,38 @@ export class BuyrambytesPage extends React.Component {
                   prefix={
                     <Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />
                   }
-                  placeholder="请输入用于支付购买内存的账户名"
+                  placeholder={PayerAccountNamePlaceholder}
                 />,
               )}
             </FormItem>
-            <FormItem>
-              {getFieldDecorator('ReceiverAccountName', {
-                rules: [
-                  {
-                    required: true,
-                    message: '请输入用于接受所购买内存的账户名!',
-                  },
-                ],
-              })(
-                <Input
-                  prefix={
-                    <Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />
-                  }
-                  placeholder="请输入用于接受所购买内存的账户名"
-                />,
-              )}
-            </FormItem>
+            {this.state.isBuyRam ? (
+              <FormItem>
+                {getFieldDecorator('ReceiverAccountName', {
+                  rules: [
+                    {
+                      required: false,
+                      message:
+                        '请输入用于接受所购买内存的账户名！不填，则默认为支付账户',
+                    },
+                  ],
+                })(
+                  <Input
+                    prefix={
+                      <Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />
+                    }
+                    placeholder="请输入用于接受所购买内存的账户名！不填，则默认为支付账户"
+                  />,
+                )}
+              </FormItem>
+            ) : (
+              <FormItem />
+            )}
             <FormItem>
               {getFieldDecorator('BytesQuantity', {
                 rules: [
                   {
                     required: true,
-                    message: '请输入购买内存的数量!',
+                    message: '请输入购买内存的数量bytes!',
                   },
                 ],
               })(
@@ -251,7 +277,7 @@ export class BuyrambytesPage extends React.Component {
                       style={{ color: 'rgba(0,0,0,.25)' }}
                     />
                   }
-                  placeholder="请输入购买内存的数量"
+                  placeholder="请输入购买内存的数量bytes"
                 />,
               )}
             </FormItem>
