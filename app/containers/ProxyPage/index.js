@@ -39,13 +39,13 @@ export class ProxyPage extends React.Component {
    * */
   onValuesChange = nextProps => {
     const values = nextProps.form.getFieldsValue();
-    const { jsonInfo, keyProvider, voter, proxy, transaction } = values;
+    const { jsonInfo, keyProvider, voter, transaction } = values;
     this.setState({
-      GetTransactionButtonState: jsonInfo && keyProvider && voter && proxy,
+      GetTransactionButtonState: jsonInfo && keyProvider && voter,
     });
     this.setState({
       CopyTransactionButtonState:
-        jsonInfo && keyProvider && voter && proxy && transaction,
+        jsonInfo && keyProvider && voter && transaction,
     });
   };
   /**
@@ -64,7 +64,7 @@ export class ProxyPage extends React.Component {
     eos
       .voteproducer({
         voter,
-        proxy,
+        proxy: proxy || '',
         producers: [],
       })
       .then(tr => {
@@ -184,13 +184,18 @@ export class ProxyPage extends React.Component {
             </FormItem>
             <FormItem>
               {getFieldDecorator('proxy', {
-                rules: [{ required: true, message: '请输入代理投票的账户名!' }],
+                rules: [
+                  {
+                    required: true,
+                    message: '请输入代理投票的账户名！ 为空将取消代理！',
+                  },
+                ],
               })(
                 <Input
                   prefix={
                     <Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />
                   }
-                  placeholder="请输入代理投票的账户名"
+                  placeholder="请输入代理投票的账户名！为空将取消代理！"
                 />,
               )}
             </FormItem>
