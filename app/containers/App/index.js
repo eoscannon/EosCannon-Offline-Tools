@@ -13,6 +13,7 @@ import { Layout } from 'antd';
 
 import StakePage from 'containers/StakePage/Loadable';
 import ProxyPage from 'containers/ProxyPage/Loadable';
+import VotePage from 'containers/VotePage/Loadable';
 import TransferPage from 'containers/TransferPage/Loadable';
 import RefundPage from 'containers/RefundPage/Loadable';
 import BuyrambytesPage from 'containers/BuyrambytesPage/Loadable';
@@ -34,6 +35,7 @@ export default function App() {
         <Route exact path="/" component={StakePage} />
         <Route path="/stake" component={StakePage} />
         <Route path="/proxy" component={ProxyPage} />
+        <Route path="/vote" component={VotePage} />
         <Route path="/transfer" component={TransferPage} />
         <Route path="/refund" component={RefundPage} />
         <Route path="/buyrambytes" component={BuyrambytesPage} />
