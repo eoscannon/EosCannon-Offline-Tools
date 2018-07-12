@@ -35,6 +35,9 @@ export default class HeaderComp extends React.PureComponent {
       case '/buyrambytes':
         defaultSelectedKeys = '5';
         break;
+      case '/vote':
+        defaultSelectedKeys = '6';
+        break;
       default:
         defaultSelectedKeys = '1';
     }
@@ -63,6 +66,11 @@ export default class HeaderComp extends React.PureComponent {
               代理
             </Link>
           </Menu.Item>
+          <Menu.Item key="6">
+            <Link href="/vote" to="/vote">
+              投票
+            </Link>
+          </Menu.Item>
           <Menu.Item key="3">
             <Link href="/transfer" to="/transfer">
               转账
@@ -75,7 +83,7 @@ export default class HeaderComp extends React.PureComponent {
           </Menu.Item>
           <Menu.Item key="5">
             <Link href="/buyrambytes" to="/buyrambytes">
-              购买内存
+              内存
             </Link>
           </Menu.Item>
         </Menu>

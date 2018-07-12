@@ -1,14 +1,14 @@
 /*
- * ProxyPage
+ * VotePage
  *
  */
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Form, Icon, Input, Button, Alert, notification } from 'antd';
+import { Form, Icon, Input, Select, Button, Alert, notification } from 'antd';
 import copy from 'copy-to-clipboard';
 import QRCode from 'qrcode.react';
-import { onLineAddress, getEos } from '../../utils/utils';
+import { onLineAddress, voteNodes, getEos } from '../../utils/utils';
 import {
   LayoutContentBox,
   LayoutContent,
@@ -17,8 +17,9 @@ import {
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
+const { Option } = Select;
 
-export class ProxyPage extends React.Component {
+export class VotePage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -39,13 +40,13 @@ export class ProxyPage extends React.Component {
    * */
   onValuesChange = nextProps => {
     const values = nextProps.form.getFieldsValue();
-    const { jsonInfo, keyProvider, voter, transaction } = values;
+    const { jsonInfo, keyProvider, voter, producers, transaction } = values;
     this.setState({
-      GetTransactionButtonState: jsonInfo && keyProvider && voter,
+      GetTransactionButtonState: jsonInfo && keyProvider && voter && producers,
     });
     this.setState({
       CopyTransactionButtonState:
-        jsonInfo && keyProvider && voter && transaction,
+        jsonInfo && keyProvider && voter && producers && transaction,
     });
   };
   /**
@@ -60,12 +61,12 @@ export class ProxyPage extends React.Component {
     });
     const values = this.props.form.getFieldsValue();
     const eos = getEos(values);
-    const { voter, proxy } = values;
+    const { voter, producers } = values;
     eos
       .voteproducer({
         voter,
-        proxy: proxy || '',
-        producers: [],
+        proxy: '',
+        producers,
       })
       .then(tr => {
         this.props.form.setFieldsValue({
@@ -183,20 +184,21 @@ export class ProxyPage extends React.Component {
               )}
             </FormItem>
             <FormItem>
-              {getFieldDecorator('proxy', {
+              {getFieldDecorator('producers', {
                 rules: [
                   {
                     required: true,
-                    message: '请输入代理投票的账户名！ 为空将取消代理！',
+                    message: '请选择投票节点！可多选，可输入！',
                   },
                 ],
               })(
-                <Input
-                  prefix={
-                    <Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />
-                  }
-                  placeholder="请输入代理投票的账户名！为空将取消代理！"
-                />,
+                <Select
+                  mode="tags"
+                  style={{ width: '100%' }}
+                  placeholder="请选择投票节点！可多选，可输入！"
+                >
+                  {voteNodes.map(item => <Option key={item}>{item}</Option>)}
+                </Select>,
               )}
             </FormItem>
             <FormItem>
@@ -247,10 +249,10 @@ export class ProxyPage extends React.Component {
   }
 }
 
-ProxyPage.propTypes = {
+VotePage.propTypes = {
   form: PropTypes.object,
 };
 
-const ProxyPageForm = Form.create()(ProxyPage);
+const VotePageForm = Form.create()(VotePage);
 
-export default ProxyPageForm;
+export default VotePageForm;
