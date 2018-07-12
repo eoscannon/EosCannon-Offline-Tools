@@ -8,6 +8,7 @@ import PropTypes from 'prop-types';
 import { Form, Icon, Input, Button, Alert, notification } from 'antd';
 import copy from 'copy-to-clipboard';
 import QRCode from 'qrcode.react';
+import eosioAbi from './abi';
 import { onLineAddress, getEos } from '../../utils/utils';
 import {
   LayoutContentBox,
@@ -91,6 +92,9 @@ export class TransferPage extends React.Component {
       transferMemo,
       transferSymbol,
     } = values;
+    if (transferContract !== 'eosio' && transferContract !== 'eosio.token') {
+      eos.fc.abiCache.abi(transferContract, eosioAbi);
+    }
     eos
       .transaction({
         actions: [
@@ -128,7 +132,7 @@ export class TransferPage extends React.Component {
         this.setState({
           GetTransactionButtonLoading: false,
         });
-        this.openTransactionFailNotification(err.error.what);
+        this.openTransactionFailNotification(err.name);
       });
   };
   /**
