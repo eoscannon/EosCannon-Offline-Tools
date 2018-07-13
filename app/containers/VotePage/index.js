@@ -130,7 +130,7 @@ export class VotePage extends React.Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const jsonInfoDescription = `请前往 ${onLineAddress} 获取json字段，联网打开网页，即可获得。复制json字段，将其粘贴在免得输入框中即可。`;
+    const jsonInfoDescription = `请前往 ${onLineAddress} 获取json字段，联网打开网页，即可获得。复制json字段，将其粘贴在下面的输入框中即可。`;
     const transactionInfoDescription = `请将下面的签名报文复制后，前往 ${onLineAddress} 联网后进行播报发送。`;
     return (
       <LayoutContent>
