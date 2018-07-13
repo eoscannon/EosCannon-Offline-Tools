@@ -9,6 +9,7 @@ import { Form, Icon, Input, Button, Alert, notification } from 'antd';
 import copy from 'copy-to-clipboard';
 import QRCode from 'qrcode.react';
 import eosioAbi from './abi';
+import eosIqAbi from './iqAbi';
 import { onLineAddress, getEos } from '../../utils/utils';
 import {
   LayoutContentBox,
@@ -93,7 +94,11 @@ export class TransferPage extends React.Component {
       transferSymbol,
     } = values;
     if (transferContract !== 'eosio' && transferContract !== 'eosio.token') {
-      eos.fc.abiCache.abi(transferContract, eosioAbi);
+      if (transferContract.toUpperCase() === 'EVERIPEDIAIQ') {
+        eos.fc.abiCache.abi(transferContract, eosIqAbi);
+      } else {
+        eos.fc.abiCache.abi(transferContract, eosioAbi);
+      }
     }
     eos
       .transaction({
