@@ -292,7 +292,7 @@ export class UpdateAuthPage extends React.Component {
                 </Button>
               </FormItem>
             </Card>
-            <Card title="校验私钥" style={{ marginBottom: 24 }}>
+            <Card title="生成公私钥" style={{ marginBottom: 24 }}>
               <FormItem>
                 <Alert
                   message="生成公私钥"
