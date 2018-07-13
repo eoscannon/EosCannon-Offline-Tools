@@ -41,11 +41,11 @@ export default class HeaderComp extends React.PureComponent {
       case '/updateauth':
         defaultSelectedKeys = '7';
         break;
-      case '/createaccount':
-        defaultSelectedKeys = '8';
+      case '/stake':
+        defaultSelectedKeys = '1';
         break;
       default:
-        defaultSelectedKeys = '1';
+        defaultSelectedKeys = '8';
     }
     this.setState({
       defaultSelectedKeys,

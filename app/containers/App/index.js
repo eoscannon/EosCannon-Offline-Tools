@@ -34,7 +34,7 @@ export default function App() {
       </Helmet>
       <Header />
       <Switch>
-        <Route exact path="/" component={StakePage} />
+        <Route exact path="/" component={CreateAccountPage} />
         <Route path="/createaccount" component={CreateAccountPage} />
         <Route path="/stake" component={StakePage} />
         <Route path="/proxy" component={ProxyPage} />

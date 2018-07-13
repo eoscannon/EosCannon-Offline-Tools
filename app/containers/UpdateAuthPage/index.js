@@ -5,7 +5,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Form, Icon, Input, Button, Alert, notification } from 'antd';
+import { Card, Form, Icon, Input, Button, Alert, notification } from 'antd';
 import copy from 'copy-to-clipboard';
 import QRCode from 'qrcode.react';
 import ecc from 'eosjs-ecc';
@@ -132,7 +132,7 @@ export class UpdateAuthPage extends React.Component {
     const actions = [];
     if (ActiveKey) {
       const UpdateActiveKeyAction = {
-        account: 'eosio.token',
+        account: 'eosio',
         name: 'updateauth',
         authorization: [
           {
@@ -144,14 +144,24 @@ export class UpdateAuthPage extends React.Component {
           account: AccountName,
           permission: 'active',
           parent: 'owner',
-          auth: ActiveKey,
+          auth: {
+            threshold: 1,
+            keys: [
+              {
+                key: ActiveKey,
+                weight: 1,
+              },
+            ],
+            accounts: [],
+            waits: [],
+          },
         },
       };
       actions.push(UpdateActiveKeyAction);
     }
     if (OwnerKey) {
       const UpdateOwnerKeyAction = {
-        account: 'eosio.token',
+        account: 'eosio',
         name: 'updateauth',
         authorization: [
           {
@@ -163,7 +173,17 @@ export class UpdateAuthPage extends React.Component {
           account: AccountName,
           permission: 'owner',
           parent: '',
-          auth: OwnerKey,
+          auth: {
+            threshold: 1,
+            keys: [
+              {
+                key: OwnerKey,
+                weight: 1,
+              },
+            ],
+            accounts: [],
+            waits: [],
+          },
         },
       };
       actions.push(UpdateOwnerKeyAction);
@@ -240,175 +260,192 @@ export class UpdateAuthPage extends React.Component {
       <LayoutContent>
         <LayoutContentBox>
           <FormComp>
-            <FormItem>
-              <Alert
-                message="校验私钥"
-                description={this.state.CheckDescription}
-                type="info"
-              />
-            </FormItem>
-            <FormItem>
-              {getFieldDecorator('CheckPrivateKey', {
-                rules: [{ required: true, message: '请输入需要校验的私钥!' }],
-              })(
-                <Input
-                  prefix={
-                    <Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />
-                  }
-                  placeholder="请输入需要校验的私钥"
-                />,
-              )}
-            </FormItem>
-            <FormItem>
-              <Button
-                type="primary"
-                className="form-button"
-                loading={this.state.GetCheckPrivateKeyButtonLoading}
-                disabled={!this.state.GetCheckPrivateKeyButtonState}
-                onClick={this.handleCheckPrivateKey}
-              >
-                校验私钥
-              </Button>
-            </FormItem>
-            <FormItem>
-              <Alert
-                message="生成公私钥"
-                description={this.state.KeyDescription}
-                type="info"
-              />
-            </FormItem>
-            <FormItem>
-              <Button
-                type="primary"
-                className="form-button"
-                loading={this.state.GetPrivateKeyButtonLoading}
-                onClick={this.handleCreatePrivateKey}
-              >
-                生成公私钥
-              </Button>
-            </FormItem>
-            <FormItem>
-              <Alert
-                message="请输入联网获取的json字段"
-                description={jsonInfoDescription}
-                type="info"
-                closable
-              />
-            </FormItem>
-            <FormItem>
-              {getFieldDecorator('jsonInfo', {
-                rules: [
-                  { required: true, message: '请输入联网获取的json字段!' },
-                ],
-              })(<TextArea placeholder="请输入联网获取的json字段" />)}
-            </FormItem>
-            <FormItem>
-              <Alert
-                message="请输入为生成签名报文所需的字段"
-                description="该页面为离线页面，输入的字段不会向外界泄露，请放心输入。"
-                type="info"
-                closable
-              />
-            </FormItem>
-            <FormItem>
-              {getFieldDecorator('keyProvider', {
-                rules: [{ required: true, message: '请输入私钥!' }],
-              })(
-                <Input
-                  prefix={
-                    <Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />
-                  }
-                  placeholder="请输入私钥"
-                />,
-              )}
-            </FormItem>
-            <FormItem>
-              {getFieldDecorator('AccountName', {
-                rules: [{ required: true, message: '请输入私钥对应的账户名!' }],
-              })(
-                <Input
-                  prefix={
-                    <Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />
-                  }
-                  placeholder="请输入私钥对应的账户名"
-                />,
-              )}
-            </FormItem>
-            <FormItem>
-              {getFieldDecorator('ActiveKey', {
-                rules: [
-                  {
-                    required: true,
-                    message: '请输入您想要的公钥activeKey',
-                  },
-                ],
-              })(
-                <Input
-                  prefix={
-                    <Icon type="unlock" style={{ color: 'rgba(0,0,0,.25)' }} />
-                  }
-                  placeholder="请输入您想要的公钥activeKey"
-                />,
-              )}
-            </FormItem>
-            <FormItem>
-              {getFieldDecorator('OwnerKey', {
-                rules: [
-                  {
-                    required: false,
-                    message: '请输入您想要的公钥ownerKey',
-                  },
-                ],
-              })(
-                <Input
-                  prefix={
-                    <Icon type="unlock" style={{ color: 'rgba(0,0,0,.25)' }} />
-                  }
-                  placeholder="请输入您想要的公钥ownerKey"
-                />,
-              )}
-            </FormItem>
-            <FormItem>
-              <Button
-                type="primary"
-                className="form-button"
-                onClick={this.handleGetTransaction}
-                loading={this.state.GetTransactionButtonLoading}
-                disabled={!this.state.GetTransactionButtonState}
-              >
-                生成签名报文
-              </Button>
-            </FormItem>
-            <FormItem>
-              <Alert
-                message="复制签名报文/扫描二维码"
-                description={transactionInfoDescription}
-                type="info"
-                closable
-              />
-            </FormItem>
-            <FormItem>
-              {getFieldDecorator('transaction', {
-                rules: [{ required: true, message: '请复制生成的签名报文!' }],
-              })(
-                <TextArea disabled="true" placeholder="请复制生成的签名报文" />,
-              )}
-            </FormItem>
-            <FormItem>
-              <div style={{ textAlign: 'center' }}>
-                <QRCode value={this.state.QrCodeValue} size={256} />
-              </div>
-            </FormItem>
-            <FormItem>
-              <Button
-                type="primary"
-                className="form-button"
-                disabled={!this.state.CopyTransactionButtonState}
-                onClick={this.handleCopyTransaction}
-              >
-                复制签名报文
-              </Button>
-            </FormItem>
+            <Card title="校验私钥" style={{ marginBottom: 24 }}>
+              <FormItem>
+                <Alert
+                  message="校验私钥"
+                  description={this.state.CheckDescription}
+                  type="info"
+                />
+              </FormItem>
+              <FormItem>
+                {getFieldDecorator('CheckPrivateKey', {
+                  rules: [{ required: true, message: '请输入需要校验的私钥!' }],
+                })(
+                  <Input
+                    prefix={
+                      <Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />
+                    }
+                    placeholder="请输入需要校验的私钥"
+                  />,
+                )}
+              </FormItem>
+              <FormItem>
+                <Button
+                  type="primary"
+                  className="form-button"
+                  loading={this.state.GetCheckPrivateKeyButtonLoading}
+                  disabled={!this.state.GetCheckPrivateKeyButtonState}
+                  onClick={this.handleCheckPrivateKey}
+                >
+                  校验私钥
+                </Button>
+              </FormItem>
+            </Card>
+            <Card title="校验私钥" style={{ marginBottom: 24 }}>
+              <FormItem>
+                <Alert
+                  message="生成公私钥"
+                  description={this.state.KeyDescription}
+                  type="info"
+                />
+              </FormItem>
+              <FormItem>
+                <Button
+                  type="primary"
+                  className="form-button"
+                  loading={this.state.GetPrivateKeyButtonLoading}
+                  onClick={this.handleCreatePrivateKey}
+                >
+                  生成公私钥
+                </Button>
+              </FormItem>
+            </Card>
+            <Card title="修改私钥">
+              <FormItem>
+                <Alert
+                  message="请输入联网获取的json字段"
+                  description={jsonInfoDescription}
+                  type="info"
+                  closable
+                />
+              </FormItem>
+              <FormItem>
+                {getFieldDecorator('jsonInfo', {
+                  rules: [
+                    { required: true, message: '请输入联网获取的json字段!' },
+                  ],
+                })(<TextArea placeholder="请输入联网获取的json字段" />)}
+              </FormItem>
+              <FormItem>
+                <Alert
+                  message="请输入为生成签名报文所需的字段"
+                  description="该页面为离线页面，输入的字段不会向外界泄露，请放心输入。"
+                  type="info"
+                  closable
+                />
+              </FormItem>
+              <FormItem>
+                {getFieldDecorator('keyProvider', {
+                  rules: [{ required: true, message: '请输入私钥!' }],
+                })(
+                  <Input
+                    prefix={
+                      <Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />
+                    }
+                    placeholder="请输入私钥"
+                  />,
+                )}
+              </FormItem>
+              <FormItem>
+                {getFieldDecorator('AccountName', {
+                  rules: [
+                    { required: true, message: '请输入私钥对应的账户名!' },
+                  ],
+                })(
+                  <Input
+                    prefix={
+                      <Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />
+                    }
+                    placeholder="请输入私钥对应的账户名"
+                  />,
+                )}
+              </FormItem>
+              <FormItem>
+                {getFieldDecorator('ActiveKey', {
+                  rules: [
+                    {
+                      required: true,
+                      message: '请输入您想要的公钥activeKey',
+                    },
+                  ],
+                })(
+                  <Input
+                    prefix={
+                      <Icon
+                        type="unlock"
+                        style={{ color: 'rgba(0,0,0,.25)' }}
+                      />
+                    }
+                    placeholder="请输入您想要的公钥activeKey"
+                  />,
+                )}
+              </FormItem>
+              <FormItem>
+                {getFieldDecorator('OwnerKey', {
+                  rules: [
+                    {
+                      required: false,
+                      message: '请输入您想要的公钥ownerKey',
+                    },
+                  ],
+                })(
+                  <Input
+                    prefix={
+                      <Icon
+                        type="unlock"
+                        style={{ color: 'rgba(0,0,0,.25)' }}
+                      />
+                    }
+                    placeholder="请输入您想要的公钥ownerKey"
+                  />,
+                )}
+              </FormItem>
+              <FormItem>
+                <Button
+                  type="primary"
+                  className="form-button"
+                  onClick={this.handleGetTransaction}
+                  loading={this.state.GetTransactionButtonLoading}
+                  disabled={!this.state.GetTransactionButtonState}
+                >
+                  生成签名报文
+                </Button>
+              </FormItem>
+              <FormItem>
+                <Alert
+                  message="复制签名报文/扫描二维码"
+                  description={transactionInfoDescription}
+                  type="info"
+                  closable
+                />
+              </FormItem>
+              <FormItem>
+                {getFieldDecorator('transaction', {
+                  rules: [{ required: true, message: '请复制生成的签名报文!' }],
+                })(
+                  <TextArea
+                    disabled="true"
+                    placeholder="请复制生成的签名报文"
+                  />,
+                )}
+              </FormItem>
+              <FormItem>
+                <div style={{ textAlign: 'center' }}>
+                  <QRCode value={this.state.QrCodeValue} size={256} />
+                </div>
+              </FormItem>
+              <FormItem>
+                <Button
+                  type="primary"
+                  className="form-button"
+                  disabled={!this.state.CopyTransactionButtonState}
+                  onClick={this.handleCopyTransaction}
+                >
+                  复制签名报文
+                </Button>
+              </FormItem>
+            </Card>
           </FormComp>
         </LayoutContentBox>
       </LayoutContent>
