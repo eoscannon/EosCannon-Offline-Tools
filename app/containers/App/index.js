@@ -11,6 +11,7 @@ import { Helmet } from 'react-helmet';
 import { Switch, Route } from 'react-router-dom';
 import { Layout } from 'antd';
 
+import CreateAccountPage from 'containers/CreateAccountPage/Loadable';
 import StakePage from 'containers/StakePage/Loadable';
 import ProxyPage from 'containers/ProxyPage/Loadable';
 import VotePage from 'containers/VotePage/Loadable';
@@ -34,6 +35,7 @@ export default function App() {
       <Header />
       <Switch>
         <Route exact path="/" component={StakePage} />
+        <Route path="/createaccount" component={CreateAccountPage} />
         <Route path="/stake" component={StakePage} />
         <Route path="/proxy" component={ProxyPage} />
         <Route path="/vote" component={VotePage} />

@@ -41,6 +41,9 @@ export default class HeaderComp extends React.PureComponent {
       case '/updateauth':
         defaultSelectedKeys = '7';
         break;
+      case '/createaccount':
+        defaultSelectedKeys = '8';
+        break;
       default:
         defaultSelectedKeys = '1';
     }
@@ -59,6 +62,11 @@ export default class HeaderComp extends React.PureComponent {
           defaultSelectedKeys={[this.state.defaultSelectedKeys]}
           style={{ lineHeight: '64px' }}
         >
+          <Menu.Item key="8">
+            <Link href="/createaccount" to="/createaccount">
+              创建账号
+            </Link>
+          </Menu.Item>
           <Menu.Item key="1">
             <Link href="/stake" to="/stake">
               质押
