@@ -47,6 +47,7 @@ export class TransferPage extends React.Component {
       FromAccountName,
       ToAccountName,
       transferContract,
+      transferPrecision,
       transferQuantity,
       transferSymbol,
       transaction,
@@ -58,6 +59,7 @@ export class TransferPage extends React.Component {
         FromAccountName &&
         ToAccountName &&
         transferContract &&
+        transferPrecision &&
         transferQuantity &&
         transferSymbol,
     });
@@ -68,6 +70,7 @@ export class TransferPage extends React.Component {
         FromAccountName &&
         ToAccountName &&
         transferContract &&
+        transferPrecision &&
         transferQuantity &&
         transferSymbol &&
         transaction,
@@ -89,6 +92,7 @@ export class TransferPage extends React.Component {
       FromAccountName,
       ToAccountName,
       transferContract,
+      transferPrecision,
       transferQuantity,
       transferMemo,
       transferSymbol,
@@ -116,7 +120,7 @@ export class TransferPage extends React.Component {
               from: FromAccountName,
               to: ToAccountName,
               quantity: `${Number(transferQuantity).toFixed(
-                4,
+                transferPrecision,
               )} ${transferSymbol.toUpperCase()}`,
               memo: transferMemo || '',
             },
@@ -263,6 +267,22 @@ export class TransferPage extends React.Component {
                     />
                   }
                   placeholder="请输入Contract!"
+                />,
+              )}
+            </FormItem>
+            <FormItem>
+              {getFieldDecorator('transferPrecision', {
+                initialValue: '4',
+                rules: [{ required: true, message: '请输入代币精度!' }],
+              })(
+                <Input
+                  prefix={
+                    <Icon
+                      type="pay-circle-o"
+                      style={{ color: 'rgba(0,0,0,.25)' }}
+                    />
+                  }
+                  placeholder="请输入代币精度"
                 />,
               )}
             </FormItem>
