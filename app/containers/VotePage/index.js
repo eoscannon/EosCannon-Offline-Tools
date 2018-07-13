@@ -183,19 +183,19 @@ export class VotePage extends React.Component {
                 />,
               )}
             </FormItem>
-            <FormItem>
+            <FormItem help="注：请选择投票节点！可多选。可输入，回车确认！">
               {getFieldDecorator('producers', {
                 rules: [
                   {
                     required: true,
-                    message: '请选择投票节点！可多选，可输入！',
+                    message: '请选择投票节点！可多选。可输入，回车确认！',
                   },
                 ],
               })(
                 <Select
                   mode="tags"
                   style={{ width: '100%' }}
-                  placeholder="请选择投票节点！可多选，可输入！"
+                  placeholder="请选择投票节点！可多选。可输入，回车确认！"
                 >
                   {voteNodes.map(item => <Option key={item}>{item}</Option>)}
                 </Select>,

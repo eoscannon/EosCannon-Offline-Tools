@@ -273,7 +273,7 @@ export class CreateAccountPage extends React.Component {
                 />,
               )}
             </FormItem>
-            <FormItem>
+            <FormItem help="注：账户名应为12个字母长度">
               {getFieldDecorator('NewAccountName', {
                 rules: [
                   {
@@ -325,7 +325,7 @@ export class CreateAccountPage extends React.Component {
                 />,
               )}
             </FormItem>
-            <FormItem>
+            <FormItem help="注：内存Bytes数量至少为4kb，即所填最小数值为：4096">
               {getFieldDecorator('Bytes', {
                 rules: [
                   {

@@ -245,7 +245,7 @@ export class TransferPage extends React.Component {
                 />,
               )}
             </FormItem>
-            <FormItem>
+            <FormItem help="">
               {getFieldDecorator('transferContract', {
                 initialValue: 'eosio.token',
                 rules: [{ required: false, message: '请输入Contract!' }],
@@ -292,7 +292,7 @@ export class TransferPage extends React.Component {
                 />,
               )}
             </FormItem>
-            <FormItem>
+            <FormItem help="注：交易所转账必填">
               {getFieldDecorator('transferMemo', {
                 rules: [
                   { required: false, message: '请输入Memo，交易所转账必填!' },

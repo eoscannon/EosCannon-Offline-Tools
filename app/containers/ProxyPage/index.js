@@ -182,7 +182,7 @@ export class ProxyPage extends React.Component {
                 />,
               )}
             </FormItem>
-            <FormItem>
+            <FormItem help="注：请输入代理投票的账户名！为空将取消代理！">
               {getFieldDecorator('proxy', {
                 rules: [
                   {

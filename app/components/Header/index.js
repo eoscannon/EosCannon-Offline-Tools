@@ -21,7 +21,7 @@ export default class HeaderComp extends React.PureComponent {
    * 根据URL地址，重新设置默认菜单选项
    * */
   componentWillMount() {
-    let defaultSelectedKeys = '1';
+    let defaultSelectedKeys = '8';
     switch (window.location.hash.substring(1)) {
       case '/proxy':
         defaultSelectedKeys = '2';
@@ -99,7 +99,7 @@ export default class HeaderComp extends React.PureComponent {
           </Menu.Item>
           <Menu.Item key="7">
             <Link href="/updateauth" to="/updateauth">
-              修改私钥
+              私钥
             </Link>
           </Menu.Item>
         </Menu>
