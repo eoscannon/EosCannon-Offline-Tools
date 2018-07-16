@@ -8,12 +8,17 @@ import PropTypes from 'prop-types';
 import { Form, Icon, Input, Button, Alert, notification } from 'antd';
 import copy from 'copy-to-clipboard';
 import QRCode from 'qrcode.react';
-import { onLineAddress, getEos } from '../../utils/utils';
+import {
+  onLineAddress,
+  transactionInfoDescription,
+  getEos,
+} from '../../utils/utils';
 import {
   LayoutContentBox,
   LayoutContent,
   FormComp,
 } from '../../components/NodeComp';
+import ScanQrcode from '../../components/ScanQrcode';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -220,27 +225,11 @@ export class CreateAccountPage extends React.Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const jsonInfoDescription = `请前往 ${onLineAddress} 获取json字段，联网打开网页，即可获得。复制json字段，将其粘贴在下面的输入框中即可。`;
-    const transactionInfoDescription = `请将下面的签名报文复制后，前往 ${onLineAddress} 联网后进行播报发送。`;
     return (
       <LayoutContent>
         <LayoutContentBox>
           <FormComp>
-            <FormItem>
-              <Alert
-                message="请输入联网获取的json字段"
-                description={jsonInfoDescription}
-                type="info"
-                closable
-              />
-            </FormItem>
-            <FormItem>
-              {getFieldDecorator('jsonInfo', {
-                rules: [
-                  { required: true, message: '请输入联网获取的json字段!' },
-                ],
-              })(<TextArea placeholder="请输入联网获取的json字段" />)}
-            </FormItem>
+            <ScanQrcode form={this.props.form} />
             <FormItem>
               <Alert
                 message="请输入为生成签名报文所需的字段"
@@ -273,13 +262,14 @@ export class CreateAccountPage extends React.Component {
                 />,
               )}
             </FormItem>
-            <FormItem help="注：账户名应为12个字母长度">
+            <FormItem help="注：账户名应为12位字符，仅限小写字母a-z以及数字1-5">
               {getFieldDecorator('NewAccountName', {
                 rules: [
                   {
                     required: true,
                     len: 12,
-                    message: '请输入想要创建的账户名，账户名应为12个字母长度',
+                    message:
+                      '请输入想要创建的账户名，账户名应为12位字符，仅限小写字母a-z以及数字1-5',
                   },
                 ],
               })(
@@ -288,23 +278,6 @@ export class CreateAccountPage extends React.Component {
                     <Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />
                   }
                   placeholder="请输入想要创建的账户名，账户名应为12个字母长度"
-                />,
-              )}
-            </FormItem>
-            <FormItem>
-              {getFieldDecorator('ActiveKey', {
-                rules: [
-                  {
-                    required: true,
-                    message: '请输入新账号的公钥activeKey',
-                  },
-                ],
-              })(
-                <Input
-                  prefix={
-                    <Icon type="unlock" style={{ color: 'rgba(0,0,0,.25)' }} />
-                  }
-                  placeholder="请输入新账号的公钥activeKey"
                 />,
               )}
             </FormItem>
@@ -322,6 +295,23 @@ export class CreateAccountPage extends React.Component {
                     <Icon type="unlock" style={{ color: 'rgba(0,0,0,.25)' }} />
                   }
                   placeholder="请输入新账号的公钥ownerKey"
+                />,
+              )}
+            </FormItem>
+            <FormItem>
+              {getFieldDecorator('ActiveKey', {
+                rules: [
+                  {
+                    required: true,
+                    message: '请输入新账号的公钥activeKey',
+                  },
+                ],
+              })(
+                <Input
+                  prefix={
+                    <Icon type="unlock" style={{ color: 'rgba(0,0,0,.25)' }} />
+                  }
+                  placeholder="请输入新账号的公钥activeKey"
                 />,
               )}
             </FormItem>

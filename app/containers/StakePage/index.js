@@ -8,12 +8,17 @@ import PropTypes from 'prop-types';
 import { Form, Icon, Input, Button, Alert, Switch, notification } from 'antd';
 import copy from 'copy-to-clipboard';
 import QRCode from 'qrcode.react';
-import { onLineAddress, getEos } from '../../utils/utils';
+import {
+  onLineAddress,
+  transactionInfoDescription,
+  getEos,
+} from '../../utils/utils';
 import {
   LayoutContentBox,
   LayoutContent,
   FormComp,
 } from '../../components/NodeComp';
+import ScanQrcode from '../../components/ScanQrcode';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -187,14 +192,15 @@ export class StakePage extends React.Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const jsonInfoDescription = `请前往 ${onLineAddress} 获取json字段，联网打开网页，即可获得。复制json字段，将其粘贴在下面的输入框中即可。`;
-    const transactionInfoDescription = `请将下面的签名报文复制后，前往 ${onLineAddress} 联网后进行播报发送。`;
     const FromAccountNamePlaceholder = this.state.isDelegatebw
       ? '请输入用于质押的账户名'
       : '请输入用于解质押的账户名';
     const ReceiverAccountNamePlaceholder = this.state.isDelegatebw
       ? '请输入接受质押的账户名，不填，则默认使用用于质押的账户名'
       : '请输入接受解质押的账户名，不填，则默认使用用于解质押的账户名';
+    const ReceiverAccountNameHelp = this.state.isDelegatebw
+      ? '注：该账户名若与用于质押的账户名不一致，则为质押给别人'
+      : '注：该账户名若与用于解质押的账户名不一致，则为解质押给别人';
     const StakeNetQuantityPlaceholder = this.state.isDelegatebw
       ? '请输入质押的Net数量'
       : '请输入解质押的Net数量';
@@ -205,21 +211,7 @@ export class StakePage extends React.Component {
       <LayoutContent>
         <LayoutContentBox>
           <FormComp>
-            <FormItem>
-              <Alert
-                message="请输入联网获取的json字段"
-                description={jsonInfoDescription}
-                type="info"
-                closable
-              />
-            </FormItem>
-            <FormItem>
-              {getFieldDecorator('jsonInfo', {
-                rules: [
-                  { required: true, message: '请输入联网获取的json字段!' },
-                ],
-              })(<TextArea placeholder="请输入联网获取的json字段" />)}
-            </FormItem>
+            <ScanQrcode form={this.props.form} />
             <FormItem>
               <Alert
                 message="请输入为生成签名报文所需的字段"
@@ -262,7 +254,7 @@ export class StakePage extends React.Component {
                 />,
               )}
             </FormItem>
-            <FormItem>
+            <FormItem help={ReceiverAccountNameHelp}>
               {getFieldDecorator('ReceiverAccountName', {
                 rules: [
                   {

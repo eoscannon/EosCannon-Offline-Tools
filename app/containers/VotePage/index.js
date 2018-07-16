@@ -8,12 +8,18 @@ import PropTypes from 'prop-types';
 import { Form, Icon, Input, Select, Button, Alert, notification } from 'antd';
 import copy from 'copy-to-clipboard';
 import QRCode from 'qrcode.react';
-import { onLineAddress, voteNodes, getEos } from '../../utils/utils';
+import {
+  onLineAddress,
+  transactionInfoDescription,
+  voteNodes,
+  getEos,
+} from '../../utils/utils';
 import {
   LayoutContentBox,
   LayoutContent,
   FormComp,
 } from '../../components/NodeComp';
+import ScanQrcode from '../../components/ScanQrcode';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -130,27 +136,11 @@ export class VotePage extends React.Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const jsonInfoDescription = `请前往 ${onLineAddress} 获取json字段，联网打开网页，即可获得。复制json字段，将其粘贴在下面的输入框中即可。`;
-    const transactionInfoDescription = `请将下面的签名报文复制后，前往 ${onLineAddress} 联网后进行播报发送。`;
     return (
       <LayoutContent>
         <LayoutContentBox>
           <FormComp>
-            <FormItem>
-              <Alert
-                message="请输入联网获取的json字段"
-                description={jsonInfoDescription}
-                type="info"
-                closable
-              />
-            </FormItem>
-            <FormItem>
-              {getFieldDecorator('jsonInfo', {
-                rules: [
-                  { required: true, message: '请输入联网获取的json字段!' },
-                ],
-              })(<TextArea placeholder="请输入联网获取的json字段" />)}
-            </FormItem>
+            <ScanQrcode form={this.props.form} />
             <FormItem>
               <Alert
                 message="请输入为生成签名报文所需的字段"
@@ -183,7 +173,7 @@ export class VotePage extends React.Component {
                 />,
               )}
             </FormItem>
-            <FormItem help="注：请选择投票节点！可多选。可输入，回车确认！">
+            <FormItem help="注：请支持EOS佳能社区：eoscannonchn。注：请选择投票节点！可多选、可搜索、可输入，回车确认！">
               {getFieldDecorator('producers', {
                 rules: [
                   {
