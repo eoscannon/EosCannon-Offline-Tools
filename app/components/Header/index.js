@@ -64,22 +64,12 @@ export default class HeaderComp extends React.PureComponent {
         >
           <Menu.Item key="8">
             <Link href="/createaccount" to="/createaccount">
-              创建账号
+              账号创建
             </Link>
           </Menu.Item>
           <Menu.Item key="1">
             <Link href="/stake" to="/stake">
-              质押
-            </Link>
-          </Menu.Item>
-          <Menu.Item key="2">
-            <Link href="/proxy" to="/proxy">
-              代理
-            </Link>
-          </Menu.Item>
-          <Menu.Item key="6">
-            <Link href="/vote" to="/vote">
-              投票
+              质押/解质押
             </Link>
           </Menu.Item>
           <Menu.Item key="3">
@@ -87,19 +77,29 @@ export default class HeaderComp extends React.PureComponent {
               转账
             </Link>
           </Menu.Item>
-          <Menu.Item key="4">
-            <Link href="/refund" to="/refund">
-              赎回
-            </Link>
-          </Menu.Item>
           <Menu.Item key="5">
             <Link href="/buyrambytes" to="/buyrambytes">
-              内存
+              内存买卖
+            </Link>
+          </Menu.Item>
+          <Menu.Item key="6">
+            <Link href="/vote" to="/vote">
+              投票
+            </Link>
+          </Menu.Item>
+          <Menu.Item key="2">
+            <Link href="/proxy" to="/proxy">
+              代理投票
             </Link>
           </Menu.Item>
           <Menu.Item key="7">
             <Link href="/updateauth" to="/updateauth">
-              私钥
+              私钥管理
+            </Link>
+          </Menu.Item>
+          <Menu.Item key="4">
+            <Link href="/refund" to="/refund">
+              手动Refund
             </Link>
           </Menu.Item>
         </Menu>
@@ -121,5 +121,10 @@ const HeaderWrapper = styled(Header)`
     font-weight: bold;
     color: #f5cb48;
     float: left;
+  }
+  .descr: {
+    font-size: 12px;
+    font-weight: normal;
+    color: #f5cb48;
   }
 `;

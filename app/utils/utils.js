@@ -1,23 +1,17 @@
 import EOS from 'eosjs';
-// import producers from './producers.json';
+import producers from './producers.json';
 
 const localChainId =
   'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906';
 
 const onLineAddress = 'https://tool.eoscannon.io/';
+const jsonInfoDescription = `请前往 ${onLineAddress} 获取json字段，联网打开网页，扫描二维码即可获得。`;
+const transactionInfoDescription = `请将下面的签名报文复制后，前往 ${onLineAddress} 联网后进行播报发送。`;
 
-const voteNodes = [
-  'acryptolions',
-  'lioninjungle',
-  'ohtigertiger',
-  'bohdanjungle',
-  'junglemorpho',
-];
-
-// const voteNodes = [];
-// producers.forEach(item => {
-//   voteNodes.push(item.owner);
-// });
+const voteNodes = [];
+producers.forEach(item => {
+  voteNodes.push(item.owner);
+});
 
 const getTransactionHeadersFromJsonInfo = jsonInfo => {
   const { refBlockNum, refBlockPrefix, expiration } = JSON.parse(jsonInfo);
@@ -48,6 +42,8 @@ const getEos = values => {
 export {
   onLineAddress,
   voteNodes,
+  jsonInfoDescription,
+  transactionInfoDescription,
   getTransactionHeadersFromJsonInfo,
   getChainIdFromJsonInfoOrConfig,
   getEos,
