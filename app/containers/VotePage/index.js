@@ -173,7 +173,7 @@ export class VotePage extends React.Component {
                 />,
               )}
             </FormItem>
-            <FormItem help="注：请支持EOS佳能社区：eoscannonchn。注：请选择投票节点！可多选、可搜索、可输入，回车确认！">
+            <FormItem help="注：请选择投票节点！可多选、可搜索、可输入，回车确认！">
               {getFieldDecorator('producers', {
                 rules: [
                   {
