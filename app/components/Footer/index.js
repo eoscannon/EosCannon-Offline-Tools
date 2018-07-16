@@ -12,9 +12,7 @@ export default class FooterComp extends React.PureComponent {
   componentDidMount() {}
 
   render() {
-    return (
-      <FooterWrapper>Ant Design ©2018 Created by Eos Cannon</FooterWrapper>
-    );
+    return <FooterWrapper>EOS佳能荣誉出品 ©2018</FooterWrapper>;
   }
 }
 
