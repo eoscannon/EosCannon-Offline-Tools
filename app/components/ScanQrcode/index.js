@@ -7,7 +7,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Form, Button, Input, Alert } from 'antd';
 import { BrowserQRCodeReader } from '../../utils/zxing.qrcodereader.min';
-import { jsonInfoDescription } from '../../utils/utils';
+import utilsMsg from '../../utils/messages';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -52,12 +52,29 @@ export default class ScanQrcode extends Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
+    const message = this.props.formatMessage(utilsMsg.JsonAlertMessage);
+    const description = this.props.formatMessage(utilsMsg.JsonAlertDescription);
+    const OpenCameraButtonName = this.props.formatMessage(
+      utilsMsg.OpenCameraButtonName,
+    );
+    const ScanQrcodeButtonName = this.props.formatMessage(
+      utilsMsg.ScanQrcodeButtonName,
+    );
+    const JsonInfoPlaceholder = this.props.formatMessage(
+      utilsMsg.JsonInfoPlaceholder,
+    );
+    const FieldAlertMessage = this.props.formatMessage(
+      utilsMsg.FieldAlertMessage,
+    );
+    const FieldAlertDescription = this.props.formatMessage(
+      utilsMsg.FieldAlertDescription,
+    );
     return (
       <div>
         <FormItem>
           <Alert
-            message="请输入联网获取的json字段"
-            description={jsonInfoDescription}
+            message={message}
+            description={description}
             type="info"
             closable
           />
@@ -70,7 +87,7 @@ export default class ScanQrcode extends Component {
             style={{ display: 'inline', marginRight: 5 }}
             onClick={this.handleOpenCamera}
           >
-            打开摄像头
+            {OpenCameraButtonName}
           </Button>
           <Button
             type="primary"
@@ -79,13 +96,21 @@ export default class ScanQrcode extends Component {
             onClick={this.handleScanQrcode}
             disabled={this.state.ScanQrcodeButtonDisable}
           >
-            扫描二维码
+            {ScanQrcodeButtonName}
           </Button>
         </FormItem>
         <FormItem>
           {getFieldDecorator('jsonInfo', {
-            rules: [{ required: true, message: '请输入联网获取的json字段!' }],
-          })(<TextArea placeholder="请输入联网获取的json字段" />)}
+            rules: [{ required: true, message: JsonInfoPlaceholder }],
+          })(<TextArea placeholder={JsonInfoPlaceholder} />)}
+        </FormItem>
+        <FormItem>
+          <Alert
+            message={FieldAlertMessage}
+            description={FieldAlertDescription}
+            type="info"
+            closable
+          />
         </FormItem>
       </div>
     );
@@ -94,4 +119,5 @@ export default class ScanQrcode extends Component {
 
 ScanQrcode.propTypes = {
   form: PropTypes.object,
+  formatMessage: PropTypes.func,
 };

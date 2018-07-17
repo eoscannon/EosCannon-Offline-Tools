@@ -1,12 +1,21 @@
 import EOS from 'eosjs';
+import { notification } from 'antd';
 import producers from './producers.json';
+import utilsMsg from './messages';
 
 const localChainId =
   'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906';
 
-const onLineAddress = 'https://tool.eoscannon.io/';
-const jsonInfoDescription = `请前往 ${onLineAddress} 获取json字段，联网打开网页，扫描二维码即可获得。`;
-const transactionInfoDescription = `请将下面的签名报文复制后，前往 ${onLineAddress} 联网后进行播报发送。`;
+const formItemLayout = {
+  labelCol: {
+    xs: { span: 8 },
+    sm: { span: 5 },
+  },
+  wrapperCol: {
+    xs: { span: 16 },
+    sm: { span: 19 },
+  },
+};
 
 const voteNodes = [];
 producers.forEach(item => {
@@ -39,12 +48,50 @@ const getEos = values => {
     transactionHeaders,
   });
 };
+
+/**
+ * 提示用户签名成功
+ * */
+const openTransactionSuccessNotification = formatMessage => {
+  notification.success({
+    message: formatMessage(utilsMsg.TransactionSuccessNotificationMsg),
+    description: formatMessage(
+      utilsMsg.TransactionSuccessNotificationDescription,
+    ),
+    duration: 3,
+  });
+};
+/**
+ * 提示用户签名失败
+ * */
+const openTransactionFailNotification = (formatMessage, what) => {
+  notification.error({
+    message: formatMessage(utilsMsg.TransactionFailNotificationMsg),
+    description: `${what}，${formatMessage(
+      utilsMsg.TransactionFailNotificationDescription,
+    )}`,
+    duration: 3,
+  });
+};
+/**
+ * 提示用户已复制成功
+ * */
+const openNotification = formatMessage => {
+  notification.success({
+    message: formatMessage(utilsMsg.CopyTransactionSuccessNotificationMsg),
+    description: formatMessage(
+      utilsMsg.CopyTransactionSuccessNotificationDescription,
+    ),
+    duration: 3,
+  });
+};
 export {
-  onLineAddress,
   voteNodes,
-  jsonInfoDescription,
-  transactionInfoDescription,
+  formItemLayout,
   getTransactionHeadersFromJsonInfo,
   getChainIdFromJsonInfoOrConfig,
   getEos,
+  openTransactionSuccessNotification,
+  openTransactionFailNotification,
+  openNotification,
 };

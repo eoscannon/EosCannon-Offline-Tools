@@ -4,14 +4,16 @@
  */
 
 import React from 'react';
+import { injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
-import { Form, Icon, Input, Button, Alert, notification } from 'antd';
+import { Form, Icon, Input } from 'antd';
 import copy from 'copy-to-clipboard';
-import QRCode from 'qrcode.react';
 import {
-  onLineAddress,
-  transactionInfoDescription,
+  formItemLayout,
   getEos,
+  openTransactionFailNotification,
+  openTransactionSuccessNotification,
+  openNotification,
 } from '../../utils/utils';
 import {
   LayoutContentBox,
@@ -19,18 +21,21 @@ import {
   FormComp,
 } from '../../components/NodeComp';
 import ScanQrcode from '../../components/ScanQrcode';
+import GetQrcode from '../../components/GetQrcode';
+import messages from './messages';
+import utilsMsg from '../../utils/messages';
 
 const FormItem = Form.Item;
-const { TextArea } = Input;
 
 export class CreateAccountPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      formatMessage: this.props.intl.formatMessage,
       GetTransactionButtonLoading: false, // 点击获取报文时，按钮加载状态
       GetTransactionButtonState: false, // 获取报文按钮可点击状态
       CopyTransactionButtonState: false, // 复制报文按钮可点击状态
-      QrCodeValue: '欢迎使用EOS佳能离线工具', // 二维码内容
+      QrCodeValue: this.props.intl.formatMessage(utilsMsg.QrCodeInitValue), // 二维码内容
     };
   }
   /**
@@ -171,34 +176,14 @@ export class CreateAccountPage extends React.Component {
           GetTransactionButtonLoading: false,
           QrCodeValue: JSON.stringify(tr.transaction),
         });
-        this.openTransactionSuccessNotification();
+        openTransactionSuccessNotification(this.state.formatMessage);
       })
       .catch(err => {
         this.setState({
           GetTransactionButtonLoading: false,
         });
-        this.openTransactionFailNotification(err.name);
+        openTransactionFailNotification(this.state.formatMessage, err.name);
       });
-  };
-  /**
-   * 提示用户签名成功
-   * */
-  openTransactionSuccessNotification = () => {
-    notification.success({
-      message: '生成签名报文成功',
-      description: `请点击下面的复制签名报文按钮或者扫描二维码获取签名报文`,
-      duration: 3,
-    });
-  };
-  /**
-   * 提示用户签名失败
-   * */
-  openTransactionFailNotification = what => {
-    notification.error({
-      message: '生成签名报文失败',
-      description: `${what}，请重新获取签名报文`,
-      duration: 3,
-    });
   };
   /**
    * 用户点击复制签名报文，将报文赋值到剪贴板，并提示用户已复制成功
@@ -210,66 +195,70 @@ export class CreateAccountPage extends React.Component {
     const values = this.props.form.getFieldsValue();
     const { transaction } = values;
     copy(transaction);
-    this.openNotification();
-  };
-  /**
-   * 提示用户已复制成功
-   * */
-  openNotification = () => {
-    notification.success({
-      message: '已复制',
-      description: `已将签名报文复制到剪贴板，请前往 ${onLineAddress} 联网将报文播报发送`,
-      duration: 3,
-    });
+    openNotification(this.state.formatMessage);
   };
 
   render() {
     const { getFieldDecorator } = this.props.form;
+    const CreatorAccountNamePlaceholder = this.state.formatMessage(
+      messages.CreatorAccountNamePlaceholder,
+    );
+    const NewAccountNamePlaceholder = this.state.formatMessage(
+      messages.NewAccountNamePlaceholder,
+    );
+    const NewAccountNameHelp = this.state.formatMessage(
+      messages.NewAccountNameHelp,
+    );
+    const OwnerKeyPlaceholder = this.state.formatMessage(
+      messages.OwnerKeyPlaceholder,
+    );
+    const ActiveKeyPlaceholder = this.state.formatMessage(
+      messages.ActiveKeyPlaceholder,
+    );
+    const BytesHelp = this.state.formatMessage(messages.BytesHelp);
+    const BytesPlaceholder = this.state.formatMessage(
+      messages.BytesPlaceholder,
+    );
+    const StakeNetQuantityPlaceholder = this.state.formatMessage(
+      messages.StakeNetQuantityPlaceholder,
+    );
+    const StakeCpuQuantityPlaceholder = this.state.formatMessage(
+      messages.StakeCpuQuantityPlaceholder,
+    );
     return (
       <LayoutContent>
         <LayoutContentBox>
           <FormComp>
-            <ScanQrcode form={this.props.form} />
-            <FormItem>
-              <Alert
-                message="请输入为生成签名报文所需的字段"
-                description="该页面为离线页面，输入的字段不会向外界泄露，请放心输入。"
-                type="info"
-                closable
-              />
-            </FormItem>
-            <FormItem>
-              {getFieldDecorator('keyProvider', {
-                rules: [{ required: true, message: '请输入私钥!' }],
-              })(
-                <Input
-                  prefix={
-                    <Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />
-                  }
-                  placeholder="请输入私钥"
-                />,
-              )}
-            </FormItem>
-            <FormItem>
+            <ScanQrcode
+              form={this.props.form}
+              formatMessage={this.state.formatMessage}
+            />
+            <FormItem {...formItemLayout} label="Creator" colon>
               {getFieldDecorator('AccountName', {
-                rules: [{ required: true, message: '请输入私钥对应的账户名!' }],
+                rules: [
+                  { required: true, message: CreatorAccountNamePlaceholder },
+                ],
               })(
                 <Input
                   prefix={
                     <Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />
                   }
-                  placeholder="请输入私钥对应的账户名"
+                  placeholder={CreatorAccountNamePlaceholder}
                 />,
               )}
             </FormItem>
-            <FormItem help="注：账户名应为12位字符，仅限小写字母a-z以及数字1-5">
+            <FormItem
+              help={NewAccountNameHelp}
+              {...formItemLayout}
+              label="Name"
+              colon
+            >
               {getFieldDecorator('NewAccountName', {
                 rules: [
                   {
                     required: true,
                     len: 12,
-                    message:
-                      '请输入想要创建的账户名，账户名应为12位字符，仅限小写字母a-z以及数字1-5',
+                    message: NewAccountNamePlaceholder,
                   },
                 ],
               })(
@@ -277,16 +266,16 @@ export class CreateAccountPage extends React.Component {
                   prefix={
                     <Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />
                   }
-                  placeholder="请输入想要创建的账户名，账户名应为12个字母长度"
+                  placeholder={NewAccountNamePlaceholder}
                 />,
               )}
             </FormItem>
-            <FormItem>
+            <FormItem {...formItemLayout} label="OwnerKey" colon>
               {getFieldDecorator('OwnerKey', {
                 rules: [
                   {
                     required: false,
-                    message: '请输入新账号的公钥ownerKey',
+                    message: OwnerKeyPlaceholder,
                   },
                 ],
               })(
@@ -294,16 +283,16 @@ export class CreateAccountPage extends React.Component {
                   prefix={
                     <Icon type="unlock" style={{ color: 'rgba(0,0,0,.25)' }} />
                   }
-                  placeholder="请输入新账号的公钥ownerKey"
+                  placeholder={OwnerKeyPlaceholder}
                 />,
               )}
             </FormItem>
-            <FormItem>
+            <FormItem {...formItemLayout} label="ActiveKey" colon>
               {getFieldDecorator('ActiveKey', {
                 rules: [
                   {
                     required: true,
-                    message: '请输入新账号的公钥activeKey',
+                    message: ActiveKeyPlaceholder,
                   },
                 ],
               })(
@@ -311,16 +300,16 @@ export class CreateAccountPage extends React.Component {
                   prefix={
                     <Icon type="unlock" style={{ color: 'rgba(0,0,0,.25)' }} />
                   }
-                  placeholder="请输入新账号的公钥activeKey"
+                  placeholder={ActiveKeyPlaceholder}
                 />,
               )}
             </FormItem>
-            <FormItem help="注：内存Bytes数量至少为4kb，即所填最小数值为：4096">
+            <FormItem help={BytesHelp} {...formItemLayout} label="Bytes" colon>
               {getFieldDecorator('Bytes', {
                 rules: [
                   {
-                    required: false,
-                    message: '请输入为新账号所购买的内存Bytes数量',
+                    required: true,
+                    message: BytesPlaceholder,
                   },
                 ],
               })(
@@ -331,16 +320,16 @@ export class CreateAccountPage extends React.Component {
                       style={{ color: 'rgba(0,0,0,.25)' }}
                     />
                   }
-                  placeholder="请输入为新账号所购买的内存Bytes数量"
+                  placeholder={BytesPlaceholder}
                 />,
               )}
             </FormItem>
-            <FormItem>
+            <FormItem {...formItemLayout} label="StakeNet" colon>
               {getFieldDecorator('StakeNetQuantity', {
                 rules: [
                   {
-                    required: false,
-                    message: '请输入为新账号所质押的Net数量',
+                    required: true,
+                    message: StakeNetQuantityPlaceholder,
                   },
                 ],
               })(
@@ -351,16 +340,16 @@ export class CreateAccountPage extends React.Component {
                       style={{ color: 'rgba(0,0,0,.25)' }}
                     />
                   }
-                  placeholder="请输入为新账号所质押的Net数量"
+                  placeholder={StakeNetQuantityPlaceholder}
                 />,
               )}
             </FormItem>
-            <FormItem>
+            <FormItem {...formItemLayout} label="StakeCpu" colon>
               {getFieldDecorator('StakeCpuQuantity', {
                 rules: [
                   {
-                    required: false,
-                    message: '请输入为新账号所质押的Cpu数量',
+                    required: true,
+                    message: StakeCpuQuantityPlaceholder,
                   },
                 ],
               })(
@@ -371,51 +360,24 @@ export class CreateAccountPage extends React.Component {
                       style={{ color: 'rgba(0,0,0,.25)' }}
                     />
                   }
-                  placeholder="请输入为新账号所质押的Cpu数量"
+                  placeholder={StakeCpuQuantityPlaceholder}
                 />,
               )}
             </FormItem>
-            <FormItem>
-              <Button
-                type="primary"
-                className="form-button"
-                onClick={this.handleGetTransaction}
-                loading={this.state.GetTransactionButtonLoading}
-                disabled={!this.state.GetTransactionButtonState}
-              >
-                生成签名报文
-              </Button>
-            </FormItem>
-            <FormItem>
-              <Alert
-                message="复制签名报文/扫描二维码"
-                description={transactionInfoDescription}
-                type="info"
-                closable
-              />
-            </FormItem>
-            <FormItem>
-              {getFieldDecorator('transaction', {
-                rules: [{ required: true, message: '请复制生成的签名报文!' }],
-              })(
-                <TextArea disabled="true" placeholder="请复制生成的签名报文" />,
-              )}
-            </FormItem>
-            <FormItem>
-              <div style={{ textAlign: 'center' }}>
-                <QRCode value={this.state.QrCodeValue} size={256} />
-              </div>
-            </FormItem>
-            <FormItem>
-              <Button
-                type="primary"
-                className="form-button"
-                disabled={!this.state.CopyTransactionButtonState}
-                onClick={this.handleCopyTransaction}
-              >
-                复制签名报文
-              </Button>
-            </FormItem>
+            <GetQrcode
+              form={this.props.form}
+              formatMessage={this.state.formatMessage}
+              GetTransactionButtonClick={this.handleGetTransaction}
+              GetTransactionButtonLoading={
+                this.state.GetTransactionButtonLoading
+              }
+              GetTransactionButtonDisabled={
+                this.state.GetTransactionButtonState
+              }
+              QrCodeValue={this.state.QrCodeValue}
+              CopyTransactionButtonState={this.state.CopyTransactionButtonState}
+              handleCopyTransaction={this.handleCopyTransaction}
+            />
           </FormComp>
         </LayoutContentBox>
       </LayoutContent>
@@ -425,8 +387,9 @@ export class CreateAccountPage extends React.Component {
 
 CreateAccountPage.propTypes = {
   form: PropTypes.object,
+  intl: PropTypes.object,
 };
-
-const CreateAccountPageForm = Form.create()(CreateAccountPage);
+const CreateAccountPageIntl = injectIntl(CreateAccountPage);
+const CreateAccountPageForm = Form.create()(CreateAccountPageIntl);
 
 export default CreateAccountPageForm;

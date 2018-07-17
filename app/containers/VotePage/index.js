@@ -4,15 +4,17 @@
  */
 
 import React from 'react';
+import { injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
-import { Form, Icon, Input, Select, Button, Alert, notification } from 'antd';
+import { Form, Icon, Input, Select } from 'antd';
 import copy from 'copy-to-clipboard';
-import QRCode from 'qrcode.react';
 import {
-  onLineAddress,
-  transactionInfoDescription,
+  formItemLayout,
   voteNodes,
   getEos,
+  openTransactionFailNotification,
+  openTransactionSuccessNotification,
+  openNotification,
 } from '../../utils/utils';
 import {
   LayoutContentBox,
@@ -20,19 +22,22 @@ import {
   FormComp,
 } from '../../components/NodeComp';
 import ScanQrcode from '../../components/ScanQrcode';
+import GetQrcode from '../../components/GetQrcode';
+import messages from './messages';
+import utilsMsg from '../../utils/messages';
 
 const FormItem = Form.Item;
-const { TextArea } = Input;
 const { Option } = Select;
 
 export class VotePage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      formatMessage: this.props.intl.formatMessage,
       GetTransactionButtonLoading: false, // 点击获取报文时，按钮加载状态
       GetTransactionButtonState: false, // 获取报文按钮可点击状态
       CopyTransactionButtonState: false, // 复制报文按钮可点击状态
-      QrCodeValue: '欢迎使用EOS佳能离线工具', // 二维码内容
+      QrCodeValue: this.props.intl.formatMessage(utilsMsg.QrCodeInitValue), // 二维码内容
     };
   }
   /**
@@ -82,34 +87,14 @@ export class VotePage extends React.Component {
           GetTransactionButtonLoading: false,
           QrCodeValue: JSON.stringify(tr.transaction),
         });
-        this.openTransactionSuccessNotification();
+        openTransactionSuccessNotification(this.state.formatMessage);
       })
       .catch(err => {
         this.setState({
           GetTransactionButtonLoading: false,
         });
-        this.openTransactionFailNotification(err.name);
+        openTransactionFailNotification(this.state.formatMessage, err.name);
       });
-  };
-  /**
-   * 提示用户签名成功
-   * */
-  openTransactionSuccessNotification = () => {
-    notification.success({
-      message: '生成签名报文成功',
-      description: `请点击下面的复制签名报文按钮或者扫描二维码获取签名报文`,
-      duration: 3,
-    });
-  };
-  /**
-   * 提示用户签名失败
-   * */
-  openTransactionFailNotification = what => {
-    notification.error({
-      message: '生成签名报文失败',
-      description: `${what}，请重新获取签名报文`,
-      duration: 3,
-    });
   };
   /**
    * 用户点击复制签名报文，将报文赋值到剪贴板，并提示用户已复制成功
@@ -121,117 +106,77 @@ export class VotePage extends React.Component {
     const values = this.props.form.getFieldsValue();
     const { transaction } = values;
     copy(transaction);
-    this.openNotification();
-  };
-  /**
-   * 提示用户已复制成功
-   * */
-  openNotification = () => {
-    notification.success({
-      message: '已复制',
-      description: `已将签名报文复制到剪贴板，请前往 ${onLineAddress} 联网将报文播报发送`,
-      duration: 3,
-    });
+    openNotification(this.state.formatMessage);
   };
 
   render() {
     const { getFieldDecorator } = this.props.form;
+    const VotePageVoterPlaceholder = this.state.formatMessage(
+      messages.VotePageVoterPlaceholder,
+    );
+    const VotePageProducersHelp = this.state.formatMessage(
+      messages.VotePageProducersHelp,
+    );
+    const VotePageProducersPlaceholder = this.state.formatMessage(
+      messages.VotePageProducersPlaceholder,
+    );
     return (
       <LayoutContent>
         <LayoutContentBox>
           <FormComp>
-            <ScanQrcode form={this.props.form} />
-            <FormItem>
-              <Alert
-                message="请输入为生成签名报文所需的字段"
-                description="该页面为离线页面，输入的字段不会向外界泄露，请放心输入。"
-                type="info"
-                closable
-              />
-            </FormItem>
-            <FormItem>
-              {getFieldDecorator('keyProvider', {
-                rules: [{ required: true, message: '请输入私钥!' }],
-              })(
-                <Input
-                  prefix={
-                    <Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />
-                  }
-                  placeholder="请输入私钥"
-                />,
-              )}
-            </FormItem>
-            <FormItem>
+            <ScanQrcode
+              form={this.props.form}
+              formatMessage={this.state.formatMessage}
+            />
+            <FormItem {...formItemLayout} label="Voter" colon>
               {getFieldDecorator('voter', {
-                rules: [{ required: true, message: '请输入您投票的账户名!' }],
+                rules: [{ required: true, message: VotePageVoterPlaceholder }],
               })(
                 <Input
                   prefix={
                     <Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />
                   }
-                  placeholder="请输入您投票的账户名"
+                  placeholder={VotePageVoterPlaceholder}
                 />,
               )}
             </FormItem>
-            <FormItem help="注：请选择投票节点！可多选、可搜索、可输入，回车确认！">
+            <FormItem
+              help={VotePageProducersHelp}
+              {...formItemLayout}
+              label="Producers"
+              colon
+            >
               {getFieldDecorator('producers', {
                 rules: [
                   {
                     required: true,
-                    message: '请选择投票节点！可多选。可输入，回车确认！',
+                    message: VotePageProducersPlaceholder,
                   },
                 ],
               })(
                 <Select
                   mode="tags"
                   style={{ width: '100%' }}
-                  placeholder="请选择投票节点！可多选。可输入，回车确认！"
+                  placeholder={VotePageProducersPlaceholder}
                 >
                   {voteNodes.map(item => <Option key={item}>{item}</Option>)}
                 </Select>,
               )}
             </FormItem>
-            <FormItem>
-              <Button
-                type="primary"
-                className="form-button"
-                onClick={this.handleGetTransaction}
-                loading={this.state.GetTransactionButtonLoading}
-                disabled={!this.state.GetTransactionButtonState}
-              >
-                生成签名报文
-              </Button>
-            </FormItem>
-            <FormItem>
-              <Alert
-                message="复制签名报文/扫描二维码"
-                description={transactionInfoDescription}
-                type="info"
-                closable
-              />
-            </FormItem>
-            <FormItem>
-              {getFieldDecorator('transaction', {
-                rules: [{ required: true, message: '请复制生成的签名报文!' }],
-              })(
-                <TextArea disabled="true" placeholder="请复制生成的签名报文" />,
-              )}
-            </FormItem>
-            <FormItem>
-              <div style={{ textAlign: 'center' }}>
-                <QRCode value={this.state.QrCodeValue} size={256} />
-              </div>
-            </FormItem>
-            <FormItem>
-              <Button
-                type="primary"
-                className="form-button"
-                disabled={!this.state.CopyTransactionButtonState}
-                onClick={this.handleCopyTransaction}
-              >
-                复制签名报文
-              </Button>
-            </FormItem>
+            <GetQrcode
+              form={this.props.form}
+              formatMessage={this.state.formatMessage}
+              GetTransactionButtonClick={this.handleGetTransaction}
+              GetTransactionButtonLoading={
+                this.state.GetTransactionButtonLoading
+              }
+              GetTransactionButtonDisabled={
+                this.state.GetTransactionButtonState
+              }
+              QrCodeValue={this.state.QrCodeValue}
+              CopyTransactionButtonState={this.state.CopyTransactionButtonState}
+              handleCopyTransaction={this.handleCopyTransaction}
+            />
           </FormComp>
         </LayoutContentBox>
       </LayoutContent>
@@ -241,8 +186,10 @@ export class VotePage extends React.Component {
 
 VotePage.propTypes = {
   form: PropTypes.object,
+  intl: PropTypes.object,
 };
 
-const VotePageForm = Form.create()(VotePage);
+const VotePageIntl = injectIntl(VotePage);
+const VotePageForm = Form.create()(VotePageIntl);
 
 export default VotePageForm;

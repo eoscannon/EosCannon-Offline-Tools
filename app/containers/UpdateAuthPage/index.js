@@ -4,15 +4,17 @@
  */
 
 import React from 'react';
+import { injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
-import { Card, Form, Icon, Input, Button, Alert, notification } from 'antd';
+import { Form, Icon, Input, Alert, Card, Button } from 'antd';
 import copy from 'copy-to-clipboard';
-import QRCode from 'qrcode.react';
 import ecc from 'eosjs-ecc';
 import {
-  onLineAddress,
-  transactionInfoDescription,
+  formItemLayout,
   getEos,
+  openTransactionFailNotification,
+  openTransactionSuccessNotification,
+  openNotification,
 } from '../../utils/utils';
 import {
   LayoutContentBox,
@@ -20,18 +22,21 @@ import {
   FormComp,
 } from '../../components/NodeComp';
 import ScanQrcode from '../../components/ScanQrcode';
+import GetQrcode from '../../components/GetQrcode';
+import messages from './messages';
+import utilsMsg from '../../utils/messages';
 
 const FormItem = Form.Item;
-const { TextArea } = Input;
 
 export class UpdateAuthPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      formatMessage: this.props.intl.formatMessage,
       GetTransactionButtonLoading: false, // 点击获取报文时，按钮加载状态
       GetTransactionButtonState: false, // 获取报文按钮可点击状态
       CopyTransactionButtonState: false, // 复制报文按钮可点击状态
-      QrCodeValue: '欢迎使用EOS佳能离线工具', // 二维码内容
+      QrCodeValue: this.props.intl.formatMessage(utilsMsg.QrCodeInitValue), // 二维码内容
       GetPrivateKeyButtonLoading: false,
       KeyDescription: '',
       GetCheckPrivateKeyButtonLoading: false,
@@ -205,34 +210,14 @@ export class UpdateAuthPage extends React.Component {
           GetTransactionButtonLoading: false,
           QrCodeValue: JSON.stringify(tr.transaction),
         });
-        this.openTransactionSuccessNotification();
+        openTransactionSuccessNotification(this.state.formatMessage);
       })
       .catch(err => {
         this.setState({
           GetTransactionButtonLoading: false,
         });
-        this.openTransactionFailNotification(err.name);
+        openTransactionFailNotification(this.state.formatMessage, err.name);
       });
-  };
-  /**
-   * 提示用户签名成功
-   * */
-  openTransactionSuccessNotification = () => {
-    notification.success({
-      message: '生成签名报文成功',
-      description: `请点击下面的复制签名报文按钮或者扫描二维码获取签名报文`,
-      duration: 3,
-    });
-  };
-  /**
-   * 提示用户签名失败
-   * */
-  openTransactionFailNotification = what => {
-    notification.error({
-      message: '生成签名报文失败',
-      description: `${what}，请重新获取签名报文`,
-      duration: 3,
-    });
   };
   /**
    * 用户点击复制签名报文，将报文赋值到剪贴板，并提示用户已复制成功
@@ -244,42 +229,55 @@ export class UpdateAuthPage extends React.Component {
     const values = this.props.form.getFieldsValue();
     const { transaction } = values;
     copy(transaction);
-    this.openNotification();
-  };
-  /**
-   * 提示用户已复制成功
-   * */
-  openNotification = () => {
-    notification.success({
-      message: '已复制',
-      description: `已将签名报文复制到剪贴板，请前往 ${onLineAddress} 联网将报文播报发送`,
-      duration: 3,
-    });
+    openNotification(this.state.formatMessage);
   };
 
   render() {
     const { getFieldDecorator } = this.props.form;
+    const CheckPrivateKeyMessage = this.state.formatMessage(
+      messages.CheckPrivateKeyMessage,
+    );
+    const CheckPrivateKeyPlaceholder = this.state.formatMessage(
+      messages.CheckPrivateKeyPlaceholder,
+    );
+    const GetPrivateKeyButtonMessage = this.state.formatMessage(
+      messages.GetPrivateKeyButtonMessage,
+    );
+    const ModifyPrivateKeyTitle = this.state.formatMessage(
+      messages.ModifyPrivateKeyTitle,
+    );
+    const UpdateAuthAccountNamePlaceholder = this.state.formatMessage(
+      messages.UpdateAuthAccountNamePlaceholder,
+    );
+    const UpdateAuthActiveKeyPlaceholder = this.state.formatMessage(
+      messages.UpdateAuthActiveKeyPlaceholder,
+    );
+    const UpdateAuthOwnerKeyPlaceholder = this.state.formatMessage(
+      messages.UpdateAuthOwnerKeyPlaceholder,
+    );
     return (
       <LayoutContent>
         <LayoutContentBox>
           <FormComp>
-            <Card title="校验私钥" style={{ marginBottom: 24 }}>
+            <Card title={CheckPrivateKeyMessage} style={{ marginBottom: 24 }}>
               <FormItem>
                 <Alert
-                  message="校验私钥"
+                  message={CheckPrivateKeyMessage}
                   description={this.state.CheckDescription}
                   type="info"
                 />
               </FormItem>
-              <FormItem>
+              <FormItem {...formItemLayout} label="PrivateKey" colon>
                 {getFieldDecorator('CheckPrivateKey', {
-                  rules: [{ required: true, message: '请输入需要校验的私钥!' }],
+                  rules: [
+                    { required: true, message: CheckPrivateKeyPlaceholder },
+                  ],
                 })(
                   <Input
                     prefix={
                       <Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />
                     }
-                    placeholder="请输入需要校验的私钥"
+                    placeholder={CheckPrivateKeyPlaceholder}
                   />,
                 )}
               </FormItem>
@@ -291,14 +289,17 @@ export class UpdateAuthPage extends React.Component {
                   disabled={!this.state.GetCheckPrivateKeyButtonState}
                   onClick={this.handleCheckPrivateKey}
                 >
-                  校验私钥
+                  {CheckPrivateKeyMessage}
                 </Button>
               </FormItem>
             </Card>
-            <Card title="生成公私钥" style={{ marginBottom: 24 }}>
+            <Card
+              title={GetPrivateKeyButtonMessage}
+              style={{ marginBottom: 24 }}
+            >
               <FormItem>
                 <Alert
-                  message="生成公私钥"
+                  message={GetPrivateKeyButtonMessage}
                   description={this.state.KeyDescription}
                   type="info"
                 />
@@ -310,52 +311,38 @@ export class UpdateAuthPage extends React.Component {
                   loading={this.state.GetPrivateKeyButtonLoading}
                   onClick={this.handleCreatePrivateKey}
                 >
-                  生成公私钥
+                  {GetPrivateKeyButtonMessage}
                 </Button>
               </FormItem>
             </Card>
-            <Card title="修改私钥">
-              <ScanQrcode form={this.props.form} />
-              <FormItem>
-                <Alert
-                  message="请输入为生成签名报文所需的字段"
-                  description="该页面为离线页面，输入的字段不会向外界泄露，请放心输入。"
-                  type="info"
-                  closable
-                />
-              </FormItem>
-              <FormItem>
-                {getFieldDecorator('keyProvider', {
-                  rules: [{ required: true, message: '请输入私钥!' }],
-                })(
-                  <Input
-                    prefix={
-                      <Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />
-                    }
-                    placeholder="请输入私钥"
-                  />,
-                )}
-              </FormItem>
-              <FormItem>
+            <Card title={ModifyPrivateKeyTitle}>
+              <ScanQrcode
+                form={this.props.form}
+                formatMessage={this.state.formatMessage}
+              />
+              <FormItem {...formItemLayout} label="Account" colon>
                 {getFieldDecorator('AccountName', {
                   rules: [
-                    { required: true, message: '请输入私钥对应的账户名!' },
+                    {
+                      required: true,
+                      message: UpdateAuthAccountNamePlaceholder,
+                    },
                   ],
                 })(
                   <Input
                     prefix={
                       <Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />
                     }
-                    placeholder="请输入私钥对应的账户名"
+                    placeholder={UpdateAuthAccountNamePlaceholder}
                   />,
                 )}
               </FormItem>
-              <FormItem>
+              <FormItem {...formItemLayout} label="ActiveKey" colon>
                 {getFieldDecorator('ActiveKey', {
                   rules: [
                     {
                       required: true,
-                      message: '请输入您想要的公钥activeKey',
+                      message: UpdateAuthActiveKeyPlaceholder,
                     },
                   ],
                 })(
@@ -366,16 +353,16 @@ export class UpdateAuthPage extends React.Component {
                         style={{ color: 'rgba(0,0,0,.25)' }}
                       />
                     }
-                    placeholder="请输入您想要的公钥activeKey"
+                    placeholder={UpdateAuthActiveKeyPlaceholder}
                   />,
                 )}
               </FormItem>
-              <FormItem>
+              <FormItem {...formItemLayout} label="OwnerKey" colon>
                 {getFieldDecorator('OwnerKey', {
                   rules: [
                     {
                       required: false,
-                      message: '请输入您想要的公钥ownerKey',
+                      message: UpdateAuthOwnerKeyPlaceholder,
                     },
                   ],
                 })(
@@ -386,54 +373,26 @@ export class UpdateAuthPage extends React.Component {
                         style={{ color: 'rgba(0,0,0,.25)' }}
                       />
                     }
-                    placeholder="请输入您想要的公钥ownerKey"
+                    placeholder={UpdateAuthOwnerKeyPlaceholder}
                   />,
                 )}
               </FormItem>
-              <FormItem>
-                <Button
-                  type="primary"
-                  className="form-button"
-                  onClick={this.handleGetTransaction}
-                  loading={this.state.GetTransactionButtonLoading}
-                  disabled={!this.state.GetTransactionButtonState}
-                >
-                  生成签名报文
-                </Button>
-              </FormItem>
-              <FormItem>
-                <Alert
-                  message="复制签名报文/扫描二维码"
-                  description={transactionInfoDescription}
-                  type="info"
-                  closable
-                />
-              </FormItem>
-              <FormItem>
-                {getFieldDecorator('transaction', {
-                  rules: [{ required: true, message: '请复制生成的签名报文!' }],
-                })(
-                  <TextArea
-                    disabled="true"
-                    placeholder="请复制生成的签名报文"
-                  />,
-                )}
-              </FormItem>
-              <FormItem>
-                <div style={{ textAlign: 'center' }}>
-                  <QRCode value={this.state.QrCodeValue} size={256} />
-                </div>
-              </FormItem>
-              <FormItem>
-                <Button
-                  type="primary"
-                  className="form-button"
-                  disabled={!this.state.CopyTransactionButtonState}
-                  onClick={this.handleCopyTransaction}
-                >
-                  复制签名报文
-                </Button>
-              </FormItem>
+              <GetQrcode
+                form={this.props.form}
+                formatMessage={this.state.formatMessage}
+                GetTransactionButtonClick={this.handleGetTransaction}
+                GetTransactionButtonLoading={
+                  this.state.GetTransactionButtonLoading
+                }
+                GetTransactionButtonDisabled={
+                  this.state.GetTransactionButtonState
+                }
+                QrCodeValue={this.state.QrCodeValue}
+                CopyTransactionButtonState={
+                  this.state.CopyTransactionButtonState
+                }
+                handleCopyTransaction={this.handleCopyTransaction}
+              />
             </Card>
           </FormComp>
         </LayoutContentBox>
@@ -444,8 +403,10 @@ export class UpdateAuthPage extends React.Component {
 
 UpdateAuthPage.propTypes = {
   form: PropTypes.object,
+  intl: PropTypes.object,
 };
 
-const UpdateAuthPageForm = Form.create()(UpdateAuthPage);
+const UpdateAuthPageIntl = injectIntl(UpdateAuthPage);
+const UpdateAuthPageForm = Form.create()(UpdateAuthPageIntl);
 
 export default UpdateAuthPageForm;
