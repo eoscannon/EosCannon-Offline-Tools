@@ -38,4 +38,28 @@ export default defineMessages({
     id: 'TransferPage TransferMemoHelp',
     defaultMessage: '注：交易所转账必填',
   },
+  FromLabel: {
+    id: 'TransferPage FromLabel',
+    defaultMessage: '转账账户',
+  },
+  ToLabel: {
+    id: 'TransferPage ToLabel',
+    defaultMessage: '接收账户',
+  },
+  ContractLabel: {
+    id: 'TransferPage ContractLabel',
+    defaultMessage: '合约',
+  },
+  QuantityLabel: {
+    id: 'TransferPage QuantityLabel',
+    defaultMessage: '转账数量',
+  },
+  DigitLabel: {
+    id: 'TransferPage DigitLabel',
+    defaultMessage: '精度',
+  },
+  SymbolLabel: {
+    id: 'TransferPage SymbolLabel',
+    defaultMessage: '单位',
+  },
 });

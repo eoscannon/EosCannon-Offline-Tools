@@ -120,6 +120,8 @@ export class VotePage extends React.Component {
     const VotePageProducersPlaceholder = this.state.formatMessage(
       messages.VotePageProducersPlaceholder,
     );
+    const VoterLabel = this.state.formatMessage(messages.VoterLabel);
+    const ProducersLabel = this.state.formatMessage(messages.ProducersLabel);
     return (
       <LayoutContent>
         <LayoutContentBox>
@@ -128,7 +130,7 @@ export class VotePage extends React.Component {
               form={this.props.form}
               formatMessage={this.state.formatMessage}
             />
-            <FormItem {...formItemLayout} label="Voter" colon>
+            <FormItem {...formItemLayout} label={VoterLabel} colon>
               {getFieldDecorator('voter', {
                 rules: [{ required: true, message: VotePageVoterPlaceholder }],
               })(
@@ -143,7 +145,7 @@ export class VotePage extends React.Component {
             <FormItem
               help={VotePageProducersHelp}
               {...formItemLayout}
-              label="Producers"
+              label={ProducersLabel}
               colon
             >
               {getFieldDecorator('producers', {

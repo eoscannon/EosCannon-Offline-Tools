@@ -56,4 +56,20 @@ export default defineMessages({
     id: 'StakePage UnDelegateStakeCpuQuantityPlaceholder',
     defaultMessage: '请输入解质押的Cpu数量',
   },
+  FromLabel: {
+    id: 'StakePage FromLabel',
+    defaultMessage: '质押账户',
+  },
+  ReceiverLabel: {
+    id: 'StakePage ReceiverLabel',
+    defaultMessage: '接收账户',
+  },
+  NetQuantityLabel: {
+    id: 'StakePage NetQuantityLabel',
+    defaultMessage: 'Net数量',
+  },
+  CpuQuantityLabel: {
+    id: 'StakePage CpuQuantityLabel',
+    defaultMessage: 'Cpu数量',
+  },
 });

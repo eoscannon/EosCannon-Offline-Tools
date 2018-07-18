@@ -90,6 +90,10 @@ export default defineMessages({
     id: 'Public CopyAlertDescription',
     defaultMessage: `请将下面的签名报文复制后，前往https://tool.eoscannon.io/联网后进行播报发送。`,
   },
+  KeyProviderFormItemLabel: {
+    id: 'Public KeyProviderFormItemLabel',
+    defaultMessage: '私钥',
+  },
   KeyProviderFormItemPlaceholder: {
     id: 'Public KeyProviderFormItemPlaceholder',
     defaultMessage: '请输入私钥',

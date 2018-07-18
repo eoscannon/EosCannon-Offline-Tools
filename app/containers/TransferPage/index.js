@@ -193,6 +193,12 @@ export class TransferPage extends React.Component {
     const TransferMemoHelp = this.state.formatMessage(
       messages.TransferMemoHelp,
     );
+    const FromLabel = this.state.formatMessage(messages.FromLabel);
+    const ToLabel = this.state.formatMessage(messages.ToLabel);
+    const ContractLabel = this.state.formatMessage(messages.ContractLabel);
+    const QuantityLabel = this.state.formatMessage(messages.QuantityLabel);
+    const DigitLabel = this.state.formatMessage(messages.DigitLabel);
+    const SymbolLabel = this.state.formatMessage(messages.SymbolLabel);
     return (
       <LayoutContent>
         <LayoutContentBox>
@@ -201,7 +207,7 @@ export class TransferPage extends React.Component {
               form={this.props.form}
               formatMessage={this.state.formatMessage}
             />
-            <FormItem {...formItemLayout} label="From" colon>
+            <FormItem {...formItemLayout} label={FromLabel} colon>
               {getFieldDecorator('FromAccountName', {
                 rules: [
                   {
@@ -218,7 +224,7 @@ export class TransferPage extends React.Component {
                 />,
               )}
             </FormItem>
-            <FormItem {...formItemLayout} label="To" colon>
+            <FormItem {...formItemLayout} label={ToLabel} colon>
               {getFieldDecorator('ToAccountName', {
                 rules: [
                   { required: true, message: TransferToAccountNamePlaceholder },
@@ -232,7 +238,7 @@ export class TransferPage extends React.Component {
                 />,
               )}
             </FormItem>
-            <FormItem {...formItemLayout} label="Contract" colon>
+            <FormItem {...formItemLayout} label={ContractLabel} colon>
               {getFieldDecorator('transferContract', {
                 initialValue: 'eosio.token',
                 rules: [
@@ -250,7 +256,7 @@ export class TransferPage extends React.Component {
                 />,
               )}
             </FormItem>
-            <FormItem {...formItemLayout} label="Quantity" colon>
+            <FormItem {...formItemLayout} label={QuantityLabel} colon>
               {getFieldDecorator('transferQuantity', {
                 rules: [
                   { required: true, message: TransferQuantityPlaceholder },
@@ -267,7 +273,7 @@ export class TransferPage extends React.Component {
                 />,
               )}
             </FormItem>
-            <FormItem {...formItemLayout} label="Digit" colon>
+            <FormItem {...formItemLayout} label={DigitLabel} colon>
               {getFieldDecorator('transferDigit', {
                 rules: [
                   {
@@ -290,7 +296,7 @@ export class TransferPage extends React.Component {
                 </Select>,
               )}
             </FormItem>
-            <FormItem {...formItemLayout} label="Symbol" colon>
+            <FormItem {...formItemLayout} label={SymbolLabel} colon>
               {getFieldDecorator('transferSymbol', {
                 initialValue: 'EOS',
                 rules: [{ required: true, message: TransferSymbolPlaceholder }],

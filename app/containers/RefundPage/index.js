@@ -116,6 +116,7 @@ export class RefundPage extends React.Component {
     const OwnerPlaceholder = this.state.formatMessage(
       messages.OwnerPlaceholder,
     );
+    const OwnerLabel = this.state.formatMessage(messages.OwnerLabel);
     return (
       <LayoutContent>
         <LayoutContentBox>
@@ -132,7 +133,7 @@ export class RefundPage extends React.Component {
               form={this.props.form}
               formatMessage={this.state.formatMessage}
             />
-            <FormItem {...formItemLayout} label="Owner" colon>
+            <FormItem {...formItemLayout} label={OwnerLabel} colon>
               {getFieldDecorator('AccountName', {
                 rules: [{ required: true, message: OwnerPlaceholder }],
               })(

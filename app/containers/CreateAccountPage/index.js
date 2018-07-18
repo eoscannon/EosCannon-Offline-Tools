@@ -225,6 +225,9 @@ export class CreateAccountPage extends React.Component {
     const StakeCpuQuantityPlaceholder = this.state.formatMessage(
       messages.StakeCpuQuantityPlaceholder,
     );
+    const CreatorLabel = this.state.formatMessage(messages.CreatorLabel);
+    const NameLabel = this.state.formatMessage(messages.NameLabel);
+    const BytesLabel = this.state.formatMessage(messages.BytesLabel);
     return (
       <LayoutContent>
         <LayoutContentBox>
@@ -233,7 +236,7 @@ export class CreateAccountPage extends React.Component {
               form={this.props.form}
               formatMessage={this.state.formatMessage}
             />
-            <FormItem {...formItemLayout} label="Creator" colon>
+            <FormItem {...formItemLayout} label={CreatorLabel} colon>
               {getFieldDecorator('AccountName', {
                 rules: [
                   { required: true, message: CreatorAccountNamePlaceholder },
@@ -250,7 +253,7 @@ export class CreateAccountPage extends React.Component {
             <FormItem
               help={NewAccountNameHelp}
               {...formItemLayout}
-              label="Name"
+              label={NameLabel}
               colon
             >
               {getFieldDecorator('NewAccountName', {
@@ -304,7 +307,12 @@ export class CreateAccountPage extends React.Component {
                 />,
               )}
             </FormItem>
-            <FormItem help={BytesHelp} {...formItemLayout} label="Bytes" colon>
+            <FormItem
+              help={BytesHelp}
+              {...formItemLayout}
+              label={BytesLabel}
+              colon
+            >
               {getFieldDecorator('Bytes', {
                 rules: [
                   {

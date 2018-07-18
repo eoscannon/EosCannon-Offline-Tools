@@ -21,6 +21,9 @@ export default class GetQrcode extends Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
+    const keyProviderLabel = this.props.formatMessage(
+      utilsMsg.KeyProviderFormItemLabel,
+    );
     const keyProviderPlaceholder = this.props.formatMessage(
       utilsMsg.KeyProviderFormItemPlaceholder,
     );
@@ -39,11 +42,10 @@ export default class GetQrcode extends Component {
     const CopyTransactionButtonName = this.props.formatMessage(
       utilsMsg.CopyTransactionButtonName,
     );
-    console.log(!this.props.GetTransactionButtonDisabled);
     console.log(!this.props.CopyTransactionButtonState);
     return (
       <div>
-        <FormItem {...formItemLayout} label="keyProvider" colon>
+        <FormItem {...formItemLayout} label={keyProviderLabel} colon>
           {getFieldDecorator('keyProvider', {
             rules: [{ required: true, message: keyProviderPlaceholder }],
           })(

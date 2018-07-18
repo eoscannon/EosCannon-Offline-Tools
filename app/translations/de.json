@@ -27,6 +27,7 @@
     "该页面为离线页面，输入的字段不会向外界泄露，请放心输入。",
   "Public CopyAlertDescription":
     "请将下面的签名报文复制后，前往https://tool.eoscannon.io/联网后进行播报发送。",
+  "Public KeyProviderFormItemLabel": "私钥",
   "Public KeyProviderFormItemPlaceholder": "请输入私钥",
   "Public GetTransactionFormItemButtonName": "生成签名报文",
   "Public CopyAlertMessage": "复制签名报文/扫描二维码",
@@ -36,6 +37,9 @@
   "Public FooterCompText": "EOS佳能荣誉出品 ©2018",
   "BuyRamBytesPage SwitchCheckedName": "购买",
   "BuyRamBytesPage SwitchUnCheckedName": "出售",
+  "BuyRamBytesPage PayerAccountNameLabel": "支付账户",
+  "BuyRamBytesPage ReceiverAccountNameLabel": "接收账户",
+  "BuyRamBytesPage BytesLabel": "字节数",
   "BuyRamBytesPage BuyPayerAccountNamePlaceholder":
     "请输入用于支付购买内存的账户名",
   "BuyRamBytesPage SellPayerAccountNamePlaceholder":
@@ -43,6 +47,9 @@
   "BuyRamBytesPage ReceiverAccountNamePlaceholder":
     "请输入用于接受所购买内存的账户名！不填，则默认为支付账户",
   "BuyRamBytesPage BytesQuantityPlaceholder": "请输入购买内存的数量bytes",
+  "CreateAccountPage CreatorLabel": "创建者",
+  "CreateAccountPage NameLabel": "账户名",
+  "CreateAccountPage BytesLabel": "字节数",
   "CreateAccountPage CreatorAccountNamePlaceholder": "请输入私钥对应的账户名",
   "CreateAccountPage NewAccountNamePlaceholder":
     "请输入想要创建的账户名，账户名应为12位字符，仅限小写字母a-z以及数字1-5",
@@ -60,9 +67,12 @@
   "ProxyPage VoterPlaceholder": "请输入您投票的账户名",
   "ProxyPage ProxyHelp": "注：请输入代理投票的账户名！为空将取消代理！",
   "ProxyPage ProxyPlaceholder": "请输入代理投票的账户名！ 为空将取消代理",
+  "ProxyPage VoterLabel": "投票账户",
+  "ProxyPage ProxyLabel": "代理账户",
   "RefundPage RefundAlertMessage": "手动Refund",
   "RefundPage RefundAlertDescription":
     "在解质押3天后，资产未到账时，可手动Refund取回资产。",
+  "RefundPage OwnerLabel": "账户名",
   "RefundPage OwnerPlaceholder": "请输入私钥对应的账户名",
   "StakePage DelegateSwitchCheckedName": "质押",
   "StakePage DelegateSwitchUnCheckedName": "解质押",
@@ -80,6 +90,10 @@
   "StakePage UnDelegateStakeNetQuantityPlaceholder": "请输入解质押的Net数量",
   "StakePage DelegateStakeCpuQuantityPlaceholder": "请输入质押的Cpu数量",
   "StakePage UnDelegateStakeCpuQuantityPlaceholder": "请输入解质押的Cpu数量",
+  "StakePage FromLabel": "质押账户",
+  "StakePage ReceiverLabel": "接收账户",
+  "StakePage NetQuantityLabel": "Net数量",
+  "StakePage CpuQuantityLabel": "Cpu数量",
   "TransferPage TransferFromAccountNamePlaceholder": "请输入私钥对应的账户名",
   "TransferPage TransferToAccountNamePlaceholder": "请输入将要转入的账户名",
   "TransferPage TransferContractPlaceholder": "请输入Contract",
@@ -88,6 +102,12 @@
   "TransferPage TransferSymbolPlaceholder": "请输入Symbol",
   "TransferPage TransferMemoPlaceholder": "请输入Memo，交易所转账必填",
   "TransferPage TransferMemoHelp": "注：交易所转账必填",
+  "TransferPage FromLabel": "转账账户",
+  "TransferPage ToLabel": "接收账户",
+  "TransferPage ContractLabel": "合约",
+  "TransferPage QuantityLabel": "转账数量",
+  "TransferPage DigitLabel": "精度",
+  "TransferPage SymbolLabel": "单位",
   "UpdateAuthPage CheckPrivateKeyMessage": "校验私钥",
   "UpdateAuthPage CheckPrivateKeyPlaceholder": "请输入需要校验的私钥",
   "UpdateAuthPage GetPrivateKeyButtonMessage": "生成公私钥",
@@ -96,10 +116,14 @@
   "UpdateAuthPage UpdateAuthActiveKeyPlaceholder":
     "请输入您想要的公钥activeKey",
   "UpdateAuthPage UpdateAuthOwnerKeyPlaceholder": "请输入您想要的公钥ownerKey",
+  "UpdateAuthPage PrivateKeyLabel": "私钥",
+  "UpdateAuthPage AccountLabel": "账户名",
   "VotePage VoterPlaceholder": "请输入您投票的账户名",
   "VotePage ProducersHelp":
     "注：请选择投票节点！可多选、可搜索、可输入，回车确认！",
   "VotePage ProducersPlaceholder": "请选择投票节点！可多选。可输入，回车确认！",
+  "VotePage VoterLabel": "账户名",
+  "VotePage ProducersLabel": "节点",
   "boilerplate.containers.LocaleToggle.de": "",
   "boilerplate.containers.LocaleToggle.en": "",
   "boilerplate.containers.NotFoundPage.header": "Seite nicht gefunden."

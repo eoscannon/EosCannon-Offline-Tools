@@ -196,6 +196,14 @@ export class StakePage extends React.Component {
       : this.state.formatMessage(
           messages.UnDelegateStakeCpuQuantityPlaceholder,
         );
+    const FromLabel = this.state.formatMessage(messages.FromLabel);
+    const ReceiverLabel = this.state.formatMessage(messages.ReceiverLabel);
+    const NetQuantityLabel = this.state.formatMessage(
+      messages.NetQuantityLabel,
+    );
+    const CpuQuantityLabel = this.state.formatMessage(
+      messages.CpuQuantityLabel,
+    );
     return (
       <LayoutContent>
         <LayoutContentBox>
@@ -212,7 +220,7 @@ export class StakePage extends React.Component {
                 onChange={this.onSwitchChange}
               />
             </FormItem>
-            <FormItem {...formItemLayout} label="From" colon>
+            <FormItem {...formItemLayout} label={FromLabel} colon>
               {getFieldDecorator('FromAccountName', {
                 rules: [
                   { required: true, message: FromAccountNamePlaceholder },
@@ -229,7 +237,7 @@ export class StakePage extends React.Component {
             <FormItem
               help={ReceiverAccountNameHelp}
               {...formItemLayout}
-              label="Receiver"
+              label={ReceiverLabel}
               colon
             >
               {getFieldDecorator('ReceiverAccountName', {
@@ -248,7 +256,7 @@ export class StakePage extends React.Component {
                 />,
               )}
             </FormItem>
-            <FormItem {...formItemLayout} label="NetQuantity" colon>
+            <FormItem {...formItemLayout} label={NetQuantityLabel} colon>
               {getFieldDecorator('stakeNetQuantity', {
                 rules: [
                   {
@@ -268,7 +276,7 @@ export class StakePage extends React.Component {
                 />,
               )}
             </FormItem>
-            <FormItem {...formItemLayout} label="CpuQuantity" colon>
+            <FormItem {...formItemLayout} label={CpuQuantityLabel} colon>
               {getFieldDecorator('stakeCpuQuantity', {
                 rules: [
                   {

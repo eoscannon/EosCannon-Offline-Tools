@@ -1,5 +1,5 @@
 /*
- * BuyrambytesPage
+ * BuyRamBytesPage
  *
  */
 
@@ -27,7 +27,7 @@ import utilsMsg from '../../utils/messages';
 
 const FormItem = Form.Item;
 
-export class BuyrambytesPage extends React.Component {
+export class BuyRamBytesPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -165,6 +165,13 @@ export class BuyrambytesPage extends React.Component {
     const BytesQuantityPlaceholder = this.state.formatMessage(
       messages.BytesQuantityPlaceholder,
     );
+    const PayerAccountNameLabel = this.state.formatMessage(
+      messages.PayerAccountNameLabel,
+    );
+    const ReceiverAccountNameLabel = this.state.formatMessage(
+      messages.ReceiverAccountNameLabel,
+    );
+    const BytesLabel = this.state.formatMessage(messages.BytesLabel);
     return (
       <LayoutContent>
         <LayoutContentBox>
@@ -182,7 +189,7 @@ export class BuyrambytesPage extends React.Component {
               />
             </FormItem>
 
-            <FormItem {...formItemLayout} label="Payer" colon>
+            <FormItem {...formItemLayout} label={PayerAccountNameLabel} colon>
               {getFieldDecorator('PayerAccountName', {
                 rules: [
                   {
@@ -200,7 +207,11 @@ export class BuyrambytesPage extends React.Component {
               )}
             </FormItem>
             {this.state.isBuyRam ? (
-              <FormItem {...formItemLayout} label="Receiver" colon>
+              <FormItem
+                {...formItemLayout}
+                label={ReceiverAccountNameLabel}
+                colon
+              >
                 {getFieldDecorator('ReceiverAccountName', {
                   rules: [
                     {
@@ -218,7 +229,7 @@ export class BuyrambytesPage extends React.Component {
                 )}
               </FormItem>
             ) : null}
-            <FormItem {...formItemLayout} label="Bytes" colon>
+            <FormItem {...formItemLayout} label={BytesLabel} colon>
               {getFieldDecorator('BytesQuantity', {
                 rules: [
                   {
@@ -259,11 +270,11 @@ export class BuyrambytesPage extends React.Component {
   }
 }
 
-BuyrambytesPage.propTypes = {
+BuyRamBytesPage.propTypes = {
   form: PropTypes.object,
   intl: PropTypes.object,
 };
-const BuyrambytesPageIntl = injectIntl(BuyrambytesPage);
-const BuyrambytesPageForm = Form.create()(BuyrambytesPageIntl);
+const BuyRamBytesPageIntl = injectIntl(BuyRamBytesPage);
+const BuyRamBytesPageForm = Form.create()(BuyRamBytesPageIntl);
 
-export default BuyrambytesPageForm;
+export default BuyRamBytesPageForm;

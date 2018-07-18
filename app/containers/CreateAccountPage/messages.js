@@ -6,9 +6,21 @@
 import { defineMessages } from 'react-intl';
 
 export default defineMessages({
+  CreatorLabel: {
+    id: 'CreateAccountPage CreatorLabel',
+    defaultMessage: '创建者',
+  },
+  NameLabel: {
+    id: 'CreateAccountPage NameLabel',
+    defaultMessage: '账户名',
+  },
+  BytesLabel: {
+    id: 'CreateAccountPage BytesLabel',
+    defaultMessage: '字节数',
+  },
   CreatorAccountNamePlaceholder: {
     id: 'CreateAccountPage CreatorAccountNamePlaceholder',
-    defaultMessage: '请输入私钥对应的账户名',
+    defaultMessage: '请输入创建者的账户名',
   },
   NewAccountNamePlaceholder: {
     id: 'CreateAccountPage NewAccountNamePlaceholder',

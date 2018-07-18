@@ -18,4 +18,12 @@ export default defineMessages({
     id: 'ProxyPage ProxyPlaceholder',
     defaultMessage: '请输入代理投票的账户名！ 为空将取消代理',
   },
+  VoterLabel: {
+    id: 'ProxyPage VoterLabel',
+    defaultMessage: '投票账户',
+  },
+  ProxyLabel: {
+    id: 'ProxyPage ProxyLabel',
+    defaultMessage: '代理账户',
+  },
 });

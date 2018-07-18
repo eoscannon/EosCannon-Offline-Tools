@@ -34,4 +34,12 @@ export default defineMessages({
     id: 'UpdateAuthPage UpdateAuthOwnerKeyPlaceholder',
     defaultMessage: '请输入您想要的公钥ownerKey',
   },
+  PrivateKeyLabel: {
+    id: 'UpdateAuthPage PrivateKeyLabel',
+    defaultMessage: '私钥',
+  },
+  AccountLabel: {
+    id: 'UpdateAuthPage AccountLabel',
+    defaultMessage: '账户名',
+  },
 });

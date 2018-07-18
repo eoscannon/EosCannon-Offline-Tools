@@ -34,6 +34,7 @@
     "The page is offline, and the fields entered will not leak out. Please feel free to enter.",
   "Public CopyAlertDescription":
     "Please copy the following signature transaction and send it to the https://tool.eoscannon.io/ network.",
+  "Public KeyProviderFormItemLabel": "PrivateKey",
   "Public KeyProviderFormItemPlaceholder": "Please enter the private key",
   "Public GetTransactionFormItemButtonName": "Generating transaction",
   "Public CopyAlertMessage": "Copy transaction / Scan qrcode",
@@ -44,6 +45,9 @@
   "Public FooterCompText": "Provided by EOS Canon ©2018",
   "BuyRamBytesPage SwitchCheckedName": "Buy",
   "BuyRamBytesPage SwitchUnCheckedName": "Sell",
+  "BuyRamBytesPage PayerAccountNameLabel": "Payer",
+  "BuyRamBytesPage ReceiverAccountNameLabel": "Receiver",
+  "BuyRamBytesPage BytesLabel": "Bytes",
   "BuyRamBytesPage BuyPayerAccountNamePlaceholder":
     "Please enter the name of the account to pay for the memory.",
   "BuyRamBytesPage SellPayerAccountNamePlaceholder":
@@ -52,6 +56,9 @@
     "Please input the account name used to accept the purchased memory. Not to be filled, the default is the payment account",
   "BuyRamBytesPage BytesQuantityPlaceholder":
     "Please enter the number of purchased memory bytes",
+  "CreateAccountPage CreatorLabel": "Creator",
+  "CreateAccountPage NameLabel": "Account",
+  "CreateAccountPage BytesLabel": "Bytes",
   "CreateAccountPage CreatorAccountNamePlaceholder":
     "Please input the creator account name",
   "CreateAccountPage NewAccountNamePlaceholder":
@@ -75,10 +82,13 @@
     "notes：Please enter the account name of the proxy vote. Cancel the agent for the empty!",
   "ProxyPage ProxyPlaceholder":
     "Please enter the account name of the proxy vote. Cancel the agent for the empty",
+  "ProxyPage VoterLabel": "Voter",
+  "ProxyPage ProxyLabel": "Proxy",
   "RefundPage RefundAlertMessage": "Manual Refund",
   "RefundPage RefundAlertDescription":
     "3 days after the unDelegate is released, assets can be retrieved manually by Refund.",
   "RefundPage OwnerPlaceholder": "Please enter your account name",
+  "RefundPage OwnerLabel": "Account",
   "StakePage DelegateSwitchCheckedName": "Delegate",
   "StakePage DelegateSwitchUnCheckedName": "UnDelegate",
   "StakePage DelegateFromAccountNamePlaceholder":
@@ -101,6 +111,10 @@
     "Please enter the number of Cpu for the Delegate",
   "StakePage UnDelegateStakeCpuQuantityPlaceholder":
     "Please enter the number of Cpu for the UnDelegate",
+  "StakePage FromLabel": "From",
+  "StakePage ReceiverLabel": "Receiver",
+  "StakePage NetQuantityLabel": "Net",
+  "StakePage CpuQuantityLabel": "Cpu",
   "TransferPage TransferFromAccountNamePlaceholder":
     "Please enter the form number",
   "TransferPage TransferToAccountNamePlaceholder": "Please enter the to number",
@@ -111,6 +125,12 @@
   "TransferPage TransferMemoPlaceholder":
     "Please enter the Memo，Exchange transfer must be filled in",
   "TransferPage TransferMemoHelp": "notes：Exchange transfer must be filled in",
+  "TransferPage FromLabel": "From",
+  "TransferPage ToLabel": "To",
+  "TransferPage ContractLabel": "Contract",
+  "TransferPage QuantityLabel": "Quantity",
+  "TransferPage DigitLabel": "Digit",
+  "TransferPage SymbolLabel": "Symbol",
   "UpdateAuthPage CheckPrivateKeyMessage": "Check PrivateKey",
   "UpdateAuthPage CheckPrivateKeyPlaceholder":
     "Please enter the PrivateKey for Check",
@@ -122,11 +142,15 @@
     "Please enter the activeKey you want",
   "UpdateAuthPage UpdateAuthOwnerKeyPlaceholder":
     "Please enter the ownerKey you want",
+  "UpdateAuthPage PrivateKeyLabel": "PrivateKey",
+  "UpdateAuthPage AccountLabel": "Account",
   "VotePage VoterPlaceholder": "Please enter the AccountName",
   "VotePage ProducersHelp":
     "notes：Please select the voting node! It can be multiple selected, searchable, and input. Enter confirm!",
   "VotePage ProducersPlaceholder":
     "Please select the voting node! It can be multiple selected, searchable, and input. Enter confirm!",
+  "VotePage VoterLabel": "Voter",
+  "VotePage ProducersLabel": "Producers",
   "boilerplate.containers.LocaleToggle.de": "de",
   "boilerplate.containers.LocaleToggle.en": "en",
   "boilerplate.containers.NotFoundPage.header": "Page not found."

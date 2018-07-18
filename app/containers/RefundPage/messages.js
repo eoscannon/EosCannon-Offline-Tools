@@ -18,4 +18,8 @@ export default defineMessages({
     id: 'RefundPage OwnerPlaceholder',
     defaultMessage: '请输入私钥对应的账户名',
   },
+  OwnerLabel: {
+    id: 'RefundPage OwnerLabel',
+    defaultMessage: '账户名',
+  },
 });

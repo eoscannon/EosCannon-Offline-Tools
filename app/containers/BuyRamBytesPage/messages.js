@@ -14,6 +14,18 @@ export default defineMessages({
     id: 'BuyRamBytesPage SwitchUnCheckedName',
     defaultMessage: '出售',
   },
+  PayerAccountNameLabel: {
+    id: 'BuyRamBytesPage PayerAccountNameLabel',
+    defaultMessage: '支付账户',
+  },
+  ReceiverAccountNameLabel: {
+    id: 'BuyRamBytesPage ReceiverAccountNameLabel',
+    defaultMessage: '接收账户',
+  },
+  BytesLabel: {
+    id: 'BuyRamBytesPage BytesLabel',
+    defaultMessage: '字节数',
+  },
   BuyPayerAccountNamePlaceholder: {
     id: 'BuyRamBytesPage BuyPayerAccountNamePlaceholder',
     defaultMessage: '请输入用于支付购买内存的账户名',
