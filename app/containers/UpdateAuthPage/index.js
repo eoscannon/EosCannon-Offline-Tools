@@ -147,24 +147,14 @@ export class UpdateAuthPage extends React.Component {
         authorization: [
           {
             actor: AccountName,
-            permission: 'active',
+            permission: 'owner',
           },
         ],
         data: {
           account: AccountName,
           permission: 'active',
           parent: 'owner',
-          auth: {
-            threshold: 1,
-            keys: [
-              {
-                key: ActiveKey,
-                weight: 1,
-              },
-            ],
-            accounts: [],
-            waits: [],
-          },
+          auth: ActiveKey,
         },
       };
       actions.push(UpdateActiveKeyAction);
@@ -183,17 +173,7 @@ export class UpdateAuthPage extends React.Component {
           account: AccountName,
           permission: 'owner',
           parent: '',
-          auth: {
-            threshold: 1,
-            keys: [
-              {
-                key: OwnerKey,
-                weight: 1,
-              },
-            ],
-            accounts: [],
-            waits: [],
-          },
+          auth: OwnerKey,
         },
       };
       actions.push(UpdateOwnerKeyAction);
@@ -255,6 +235,8 @@ export class UpdateAuthPage extends React.Component {
     const UpdateAuthOwnerKeyPlaceholder = this.state.formatMessage(
       messages.UpdateAuthOwnerKeyPlaceholder,
     );
+    const PrivateKeyLabel = this.state.formatMessage(messages.PrivateKeyLabel);
+    const AccountLabel = this.state.formatMessage(messages.AccountLabel);
     return (
       <LayoutContent>
         <LayoutContentBox>
@@ -267,7 +249,7 @@ export class UpdateAuthPage extends React.Component {
                   type="info"
                 />
               </FormItem>
-              <FormItem {...formItemLayout} label="PrivateKey" colon>
+              <FormItem {...formItemLayout} label={PrivateKeyLabel} colon>
                 {getFieldDecorator('CheckPrivateKey', {
                   rules: [
                     { required: true, message: CheckPrivateKeyPlaceholder },
@@ -320,7 +302,7 @@ export class UpdateAuthPage extends React.Component {
                 form={this.props.form}
                 formatMessage={this.state.formatMessage}
               />
-              <FormItem {...formItemLayout} label="Account" colon>
+              <FormItem {...formItemLayout} label={AccountLabel} colon>
                 {getFieldDecorator('AccountName', {
                   rules: [
                     {
