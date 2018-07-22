@@ -4,10 +4,10 @@
   "Public HeaderMenuCreateAccount": "CreateAccount",
   "Public HeaderMenuDelegate": "Delegate",
   "Public HeaderMenuTransfer": "Transfer",
-  "Public HeaderMenuBuyRamBytes": "RamBytes",
+  "Public HeaderMenuBuyRamBytes": "Buy/Sell Ram",
   "Public HeaderMenuVote": "Vote",
   "Public HeaderMenuProxy": "Proxy",
-  "Public HeaderMenuUpdateAuth": "UpdateAuth",
+  "Public HeaderMenuUpdateAuth": "PK management",
   "Public HeaderMenuRefund": "Refund",
   "Public TransactionSuccessNotificationMsg":
     "The success of generating a signature transaction",
