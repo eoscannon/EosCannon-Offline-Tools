@@ -4,29 +4,39 @@
  */
 
 import React from 'react';
+import { injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
-import { Form, Icon, Input, Button, Alert, Switch, notification } from 'antd';
+import { Form, Icon, Input, Switch } from 'antd';
 import copy from 'copy-to-clipboard';
-import QRCode from 'qrcode.react';
-import { onLineAddress, getEos } from '../../utils/utils';
+import {
+  formItemLayout,
+  getEos,
+  openTransactionFailNotification,
+  openTransactionSuccessNotification,
+  openNotification,
+} from '../../utils/utils';
 import {
   LayoutContentBox,
   LayoutContent,
   FormComp,
 } from '../../components/NodeComp';
+import ScanQrcode from '../../components/ScanQrcode';
+import GetQrcode from '../../components/GetQrcode';
+import messages from './messages';
+import utilsMsg from '../../utils/messages';
 
 const FormItem = Form.Item;
-const { TextArea } = Input;
 
 export class StakePage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      formatMessage: this.props.intl.formatMessage,
       isDelegatebw: true, // true：质押；false：解质押
       GetTransactionButtonLoading: false, // 点击获取报文时，按钮加载状态
       GetTransactionButtonState: false, // 获取报文按钮可点击状态
       CopyTransactionButtonState: false, // 复制报文按钮可点击状态
-      QrCodeValue: '欢迎使用EOS佳能离线工具', // 二维码内容
+      QrCodeValue: this.props.intl.formatMessage(utilsMsg.QrCodeInitValue), // 二维码内容
     };
   }
   /**
@@ -115,7 +125,7 @@ export class StakePage extends React.Component {
           this.setState({
             GetTransactionButtonLoading: false,
           });
-          this.openTransactionFailNotification(err.error.what);
+          this.openTransactionFailNotification(err.name);
         });
     } else {
       eos
@@ -132,35 +142,15 @@ export class StakePage extends React.Component {
           this.setState({
             GetTransactionButtonLoading: false,
           });
-          this.openTransactionSuccessNotification();
+          openTransactionSuccessNotification(this.state.formatMessage);
         })
         .catch(err => {
           this.setState({
             GetTransactionButtonLoading: false,
           });
-          this.openTransactionFailNotification(err.error.what);
+          openTransactionFailNotification(this.state.formatMessage, err.name);
         });
     }
-  };
-  /**
-   * 提示用户签名成功
-   * */
-  openTransactionSuccessNotification = () => {
-    notification.success({
-      message: '生成签名报文成功',
-      description: `请点击下面的复制签名报文按钮或者扫描二维码获取签名报文`,
-      duration: 3,
-    });
-  };
-  /**
-   * 提示用户签名失败
-   * */
-  openTransactionFailNotification = what => {
-    notification.error({
-      message: '生成签名报文失败',
-      description: `${what}，请重新获取签名报文`,
-      duration: 3,
-    });
   };
   /**
    * 用户点击复制签名报文，将报文赋值到剪贴板，并提示用户已复制成功
@@ -172,83 +162,65 @@ export class StakePage extends React.Component {
     const values = this.props.form.getFieldsValue();
     const { transaction } = values;
     copy(transaction);
-    this.openNotification();
-  };
-  /**
-   * 提示用户已复制成功
-   * */
-  openNotification = () => {
-    notification.success({
-      message: '已复制',
-      description: `已将签名报文复制到剪贴板，请前往 ${onLineAddress} 联网将报文播报发送`,
-      duration: 3,
-    });
+    openNotification(this.state.formatMessage);
   };
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const jsonInfoDescription = `请前往 ${onLineAddress} 获取json字段，联网打开网页，即可获得。复制json字段，将其粘贴在免得输入框中即可。`;
-    const transactionInfoDescription = `请将下面的签名报文复制后，前往 ${onLineAddress} 联网后进行播报发送。`;
+    const DelegateSwitchCheckedName = this.state.formatMessage(
+      messages.DelegateSwitchCheckedName,
+    );
+    const DelegateSwitchUnCheckedName = this.state.formatMessage(
+      messages.DelegateSwitchUnCheckedName,
+    );
     const FromAccountNamePlaceholder = this.state.isDelegatebw
-      ? '请输入用于质押的账户名'
-      : '请输入用于解质押的账户名';
+      ? this.state.formatMessage(messages.DelegateFromAccountNamePlaceholder)
+      : this.state.formatMessage(messages.UnDelegateFromAccountNamePlaceholder);
     const ReceiverAccountNamePlaceholder = this.state.isDelegatebw
-      ? '请输入接受质押的账户名，不填，则默认使用用于质押的账户名'
-      : '请输入接受解质押的账户名，不填，则默认使用用于解质押的账户名';
+      ? this.state.formatMessage(
+          messages.DelegateReceiverAccountNamePlaceholder,
+        )
+      : this.state.formatMessage(
+          messages.UnDelegateReceiverAccountNamePlaceholder,
+        );
+    const ReceiverAccountNameHelp = this.state.isDelegatebw
+      ? this.state.formatMessage(messages.DelegateReceiverAccountNameHelp)
+      : this.state.formatMessage(messages.UnDelegateReceiverAccountNameHelp);
     const StakeNetQuantityPlaceholder = this.state.isDelegatebw
-      ? '请输入质押的Net数量'
-      : '请输入解质押的Net数量';
+      ? this.state.formatMessage(messages.DelegateStakeNetQuantityPlaceholder)
+      : this.state.formatMessage(
+          messages.UnDelegateStakeNetQuantityPlaceholder,
+        );
     const StakeCpuQuantityPlaceholder = this.state.isDelegatebw
-      ? '请输入质押的Cpu数量'
-      : '请输入解质押的Cpu数量';
+      ? this.state.formatMessage(messages.DelegateStakeCpuQuantityPlaceholder)
+      : this.state.formatMessage(
+          messages.UnDelegateStakeCpuQuantityPlaceholder,
+        );
+    const FromLabel = this.state.formatMessage(messages.FromLabel);
+    const ReceiverLabel = this.state.formatMessage(messages.ReceiverLabel);
+    const NetQuantityLabel = this.state.formatMessage(
+      messages.NetQuantityLabel,
+    );
+    const CpuQuantityLabel = this.state.formatMessage(
+      messages.CpuQuantityLabel,
+    );
     return (
       <LayoutContent>
         <LayoutContentBox>
           <FormComp>
-            <FormItem>
-              <Alert
-                message="请输入联网获取的json字段"
-                description={jsonInfoDescription}
-                type="info"
-                closable
-              />
-            </FormItem>
-            <FormItem>
-              {getFieldDecorator('jsonInfo', {
-                rules: [
-                  { required: true, message: '请输入联网获取的json字段!' },
-                ],
-              })(<TextArea placeholder="请输入联网获取的json字段" />)}
-            </FormItem>
-            <FormItem>
-              <Alert
-                message="请输入为生成签名报文所需的字段"
-                description="该页面为离线页面，输入的字段不会向外界泄露，请放心输入。"
-                type="info"
-                closable
-              />
-            </FormItem>
+            <ScanQrcode
+              form={this.props.form}
+              formatMessage={this.state.formatMessage}
+            />
             <FormItem>
               <Switch
-                checkedChildren="质押"
-                unCheckedChildren="解质押"
+                checkedChildren={DelegateSwitchCheckedName}
+                unCheckedChildren={DelegateSwitchUnCheckedName}
                 defaultChecked={this.state.isDelegatebw}
                 onChange={this.onSwitchChange}
               />
             </FormItem>
-            <FormItem>
-              {getFieldDecorator('keyProvider', {
-                rules: [{ required: true, message: '请输入私钥!' }],
-              })(
-                <Input
-                  prefix={
-                    <Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />
-                  }
-                  placeholder="请输入私钥"
-                />,
-              )}
-            </FormItem>
-            <FormItem>
+            <FormItem {...formItemLayout} label={FromLabel} colon>
               {getFieldDecorator('FromAccountName', {
                 rules: [
                   { required: true, message: FromAccountNamePlaceholder },
@@ -262,7 +234,12 @@ export class StakePage extends React.Component {
                 />,
               )}
             </FormItem>
-            <FormItem>
+            <FormItem
+              help={ReceiverAccountNameHelp}
+              {...formItemLayout}
+              label={ReceiverLabel}
+              colon
+            >
               {getFieldDecorator('ReceiverAccountName', {
                 rules: [
                   {
@@ -279,7 +256,7 @@ export class StakePage extends React.Component {
                 />,
               )}
             </FormItem>
-            <FormItem>
+            <FormItem {...formItemLayout} label={NetQuantityLabel} colon>
               {getFieldDecorator('stakeNetQuantity', {
                 rules: [
                   {
@@ -299,7 +276,7 @@ export class StakePage extends React.Component {
                 />,
               )}
             </FormItem>
-            <FormItem>
+            <FormItem {...formItemLayout} label={CpuQuantityLabel} colon>
               {getFieldDecorator('stakeCpuQuantity', {
                 rules: [
                   {
@@ -319,47 +296,20 @@ export class StakePage extends React.Component {
                 />,
               )}
             </FormItem>
-            <FormItem>
-              <Button
-                type="primary"
-                className="form-button"
-                onClick={this.handleGetTransaction}
-                loading={this.state.GetTransactionButtonLoading}
-                disabled={!this.state.GetTransactionButtonState}
-              >
-                生成签名报文
-              </Button>
-            </FormItem>
-            <FormItem>
-              <Alert
-                message="复制签名报文/扫描二维码"
-                description={transactionInfoDescription}
-                type="info"
-                closable
-              />
-            </FormItem>
-            <FormItem>
-              {getFieldDecorator('transaction', {
-                rules: [{ required: true, message: '请复制生成的签名报文!' }],
-              })(
-                <TextArea disabled="true" placeholder="请复制生成的签名报文" />,
-              )}
-            </FormItem>
-            <FormItem>
-              <div style={{ textAlign: 'center' }}>
-                <QRCode value={this.state.QrCodeValue} size={256} />
-              </div>
-            </FormItem>
-            <FormItem>
-              <Button
-                type="primary"
-                className="form-button"
-                disabled={!this.state.CopyTransactionButtonState}
-                onClick={this.handleCopyTransaction}
-              >
-                复制签名报文
-              </Button>
-            </FormItem>
+            <GetQrcode
+              form={this.props.form}
+              formatMessage={this.state.formatMessage}
+              GetTransactionButtonClick={this.handleGetTransaction}
+              GetTransactionButtonLoading={
+                this.state.GetTransactionButtonLoading
+              }
+              GetTransactionButtonDisabled={
+                this.state.GetTransactionButtonState
+              }
+              QrCodeValue={this.state.QrCodeValue}
+              CopyTransactionButtonState={this.state.CopyTransactionButtonState}
+              handleCopyTransaction={this.handleCopyTransaction}
+            />
           </FormComp>
         </LayoutContentBox>
       </LayoutContent>
@@ -369,8 +319,10 @@ export class StakePage extends React.Component {
 
 StakePage.propTypes = {
   form: PropTypes.object,
+  intl: PropTypes.object,
 };
 
-const StakePageForm = Form.create()(StakePage);
+const StakePageIntl = injectIntl(StakePage);
+const StakePageForm = Form.create()(StakePageIntl);
 
 export default StakePageForm;

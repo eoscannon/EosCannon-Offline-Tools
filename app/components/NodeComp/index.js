@@ -25,6 +25,9 @@ const FormComp = styled(Form)`
     padding: 0 45px;
     margin: 0 auto;
   }
+  .ant-form-item-label {
+    text-align: left;
+  }
 `;
 
 export { LayoutContent, LayoutContentBox, FormComp };

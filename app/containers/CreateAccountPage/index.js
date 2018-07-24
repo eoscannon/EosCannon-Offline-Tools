@@ -1,14 +1,13 @@
 /*
- * TransferPage
+ * CreateAccountPage
  *
  */
+
 import React from 'react';
 import { injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
-import { Form, Icon, Input, Select } from 'antd';
+import { Form, Icon, Input } from 'antd';
 import copy from 'copy-to-clipboard';
-import eosioAbi from './abi';
-import eosIqAbi from './iqAbi';
 import {
   formItemLayout,
   getEos,
@@ -27,9 +26,8 @@ import messages from './messages';
 import utilsMsg from '../../utils/messages';
 
 const FormItem = Form.Item;
-const { Option } = Select;
 
-export class TransferPage extends React.Component {
+export class CreateAccountPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -54,35 +52,38 @@ export class TransferPage extends React.Component {
     const {
       jsonInfo,
       keyProvider,
-      FromAccountName,
-      ToAccountName,
-      transferContract,
-      transferQuantity,
-      transferDigit,
-      transferSymbol,
+      AccountName,
+      NewAccountName,
+      ActiveKey,
+      OwnerKey,
+      Bytes,
+      StakeNetQuantity,
+      StakeCpuQuantity,
       transaction,
     } = values;
     this.setState({
       GetTransactionButtonState:
         jsonInfo &&
         keyProvider &&
-        FromAccountName &&
-        ToAccountName &&
-        transferContract &&
-        transferQuantity &&
-        transferDigit &&
-        transferSymbol,
+        AccountName &&
+        NewAccountName &&
+        ActiveKey &&
+        OwnerKey &&
+        Bytes &&
+        StakeNetQuantity &&
+        StakeCpuQuantity,
     });
     this.setState({
       CopyTransactionButtonState:
         jsonInfo &&
         keyProvider &&
-        FromAccountName &&
-        ToAccountName &&
-        transferContract &&
-        transferQuantity &&
-        transferDigit &&
-        transferSymbol &&
+        AccountName &&
+        NewAccountName &&
+        ActiveKey &&
+        OwnerKey &&
+        Bytes &&
+        StakeNetQuantity &&
+        StakeCpuQuantity &&
         transaction,
     });
   };
@@ -99,43 +100,73 @@ export class TransferPage extends React.Component {
     const values = this.props.form.getFieldsValue();
     const eos = getEos(values);
     const {
-      FromAccountName,
-      ToAccountName,
-      transferContract,
-      transferQuantity,
-      transferDigit,
-      transferMemo,
-      transferSymbol,
+      AccountName,
+      NewAccountName,
+      ActiveKey,
+      OwnerKey,
+      Bytes,
+      StakeNetQuantity,
+      StakeCpuQuantity,
     } = values;
-    if (transferContract !== 'eosio' && transferContract !== 'eosio.token') {
-      if (transferContract.toUpperCase() === 'EVERIPEDIAIQ') {
-        eos.fc.abiCache.abi(transferContract, eosIqAbi);
-      } else {
-        eos.fc.abiCache.abi(transferContract, eosioAbi);
-      }
-    }
+    const actions = [];
+    const NewAccountAction = {
+      account: 'eosio',
+      name: 'newaccount',
+      authorization: [
+        {
+          actor: AccountName,
+          permission: 'active',
+        },
+      ],
+      data: {
+        creator: AccountName,
+        name: NewAccountName,
+        owner: OwnerKey,
+        active: ActiveKey,
+      },
+    };
+    actions.push(NewAccountAction);
+    const BuyRamBytesAction = {
+      account: 'eosio',
+      name: 'buyrambytes',
+      authorization: [
+        {
+          actor: AccountName,
+          permission: 'active',
+        },
+      ],
+      data: {
+        payer: AccountName,
+        receiver: NewAccountName,
+        bytes: Number(Bytes),
+      },
+    };
+    actions.push(BuyRamBytesAction);
+    const DelegateBwAction = {
+      account: 'eosio',
+      name: 'delegatebw',
+      authorization: [
+        {
+          actor: AccountName,
+          permission: 'active',
+        },
+      ],
+      data: {
+        from: AccountName,
+        receiver: NewAccountName,
+        stake_net_quantity: `${Number(StakeNetQuantity)
+          .toFixed(4)
+          .toString()} EOS`,
+        stake_cpu_quantity: `${Number(StakeCpuQuantity)
+          .toFixed(4)
+          .toString()} EOS`,
+        transfer: 0,
+      },
+    };
+    actions.push(DelegateBwAction);
     eos
       .transaction({
-        actions: [
-          {
-            account: transferContract,
-            name: 'transfer',
-            authorization: [
-              {
-                actor: FromAccountName,
-                permission: 'active',
-              },
-            ],
-            data: {
-              from: FromAccountName,
-              to: ToAccountName,
-              quantity: `${Number(transferQuantity).toFixed(
-                Number(transferDigit),
-              )} ${transferSymbol.toUpperCase()}`,
-              memo: transferMemo || '',
-            },
-          },
-        ],
+        actions,
       })
       .then(tr => {
         this.props.form.setFieldsValue({
@@ -169,36 +200,34 @@ export class TransferPage extends React.Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const TransferFromAccountNamePlaceholder = this.state.formatMessage(
-      messages.TransferFromAccountNamePlaceholder,
+    const CreatorAccountNamePlaceholder = this.state.formatMessage(
+      messages.CreatorAccountNamePlaceholder,
     );
-    const TransferToAccountNamePlaceholder = this.state.formatMessage(
-      messages.TransferToAccountNamePlaceholder,
+    const NewAccountNamePlaceholder = this.state.formatMessage(
+      messages.NewAccountNamePlaceholder,
     );
-    const TransferContractPlaceholder = this.state.formatMessage(
-      messages.TransferContractPlaceholder,
+    const NewAccountNameHelp = this.state.formatMessage(
+      messages.NewAccountNameHelp,
     );
-    const TransferQuantityPlaceholder = this.state.formatMessage(
-      messages.TransferQuantityPlaceholder,
+    const OwnerKeyPlaceholder = this.state.formatMessage(
+      messages.OwnerKeyPlaceholder,
     );
-    const TransferDigitPlaceholder = this.state.formatMessage(
-      messages.TransferDigitPlaceholder,
+    const ActiveKeyPlaceholder = this.state.formatMessage(
+      messages.ActiveKeyPlaceholder,
     );
-    const TransferSymbolPlaceholder = this.state.formatMessage(
-      messages.TransferSymbolPlaceholder,
+    const BytesHelp = this.state.formatMessage(messages.BytesHelp);
+    const BytesPlaceholder = this.state.formatMessage(
+      messages.BytesPlaceholder,
     );
-    const TransferMemoPlaceholder = this.state.formatMessage(
-      messages.TransferMemoPlaceholder,
+    const StakeNetQuantityPlaceholder = this.state.formatMessage(
+      messages.StakeNetQuantityPlaceholder,
     );
-    const TransferMemoHelp = this.state.formatMessage(
-      messages.TransferMemoHelp,
+    const StakeCpuQuantityPlaceholder = this.state.formatMessage(
+      messages.StakeCpuQuantityPlaceholder,
     );
-    const FromLabel = this.state.formatMessage(messages.FromLabel);
-    const ToLabel = this.state.formatMessage(messages.ToLabel);
-    const ContractLabel = this.state.formatMessage(messages.ContractLabel);
-    const QuantityLabel = this.state.formatMessage(messages.QuantityLabel);
-    const DigitLabel = this.state.formatMessage(messages.DigitLabel);
-    const SymbolLabel = this.state.formatMessage(messages.SymbolLabel);
+    const CreatorLabel = this.state.formatMessage(messages.CreatorLabel);
+    const NameLabel = this.state.formatMessage(messages.NameLabel);
+    const BytesLabel = this.state.formatMessage(messages.BytesLabel);
     return (
       <LayoutContent>
         <LayoutContentBox>
@@ -207,119 +236,90 @@ export class TransferPage extends React.Component {
               form={this.props.form}
               formatMessage={this.state.formatMessage}
             />
-            <FormItem {...formItemLayout} label={FromLabel} colon>
-              {getFieldDecorator('FromAccountName', {
+            <FormItem {...formItemLayout} label={CreatorLabel} colon>
+              {getFieldDecorator('AccountName', {
                 rules: [
-                  {
-                    required: true,
-                    message: TransferFromAccountNamePlaceholder,
-                  },
+                  { required: true, message: CreatorAccountNamePlaceholder },
                 ],
               })(
                 <Input
                   prefix={
                     <Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />
                   }
-                  placeholder={TransferFromAccountNamePlaceholder}
-                />,
-              )}
-            </FormItem>
-            <FormItem {...formItemLayout} label={ToLabel} colon>
-              {getFieldDecorator('ToAccountName', {
-                rules: [
-                  { required: true, message: TransferToAccountNamePlaceholder },
-                ],
-              })(
-                <Input
-                  prefix={
-                    <Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />
-                  }
-                  placeholder={TransferToAccountNamePlaceholder}
-                />,
-              )}
-            </FormItem>
-            <FormItem {...formItemLayout} label={ContractLabel} colon>
-              {getFieldDecorator('transferContract', {
-                initialValue: 'eosio.token',
-                rules: [
-                  { required: true, message: TransferContractPlaceholder },
-                ],
-              })(
-                <Input
-                  prefix={
-                    <Icon
-                      type="pay-circle-o"
-                      style={{ color: 'rgba(0,0,0,.25)' }}
-                    />
-                  }
-                  placeholder={TransferContractPlaceholder}
-                />,
-              )}
-            </FormItem>
-            <FormItem {...formItemLayout} label={QuantityLabel} colon>
-              {getFieldDecorator('transferQuantity', {
-                rules: [
-                  { required: true, message: TransferQuantityPlaceholder },
-                ],
-              })(
-                <Input
-                  prefix={
-                    <Icon
-                      type="pay-circle-o"
-                      style={{ color: 'rgba(0,0,0,.25)' }}
-                    />
-                  }
-                  placeholder={TransferQuantityPlaceholder}
-                />,
-              )}
-            </FormItem>
-            <FormItem {...formItemLayout} label={DigitLabel} colon>
-              {getFieldDecorator('transferDigit', {
-                rules: [
-                  {
-                    required: true,
-                    message: TransferDigitPlaceholder,
-                  },
-                ],
-                initialValue: '4',
-              })(
-                <Select
-                  style={{ width: '100%' }}
-                  placeholder={TransferDigitPlaceholder}
-                >
-                  <Option key="4" value="4">
-                    4
-                  </Option>
-                  <Option key="3" value="3">
-                    3
-                  </Option>
-                </Select>,
-              )}
-            </FormItem>
-            <FormItem {...formItemLayout} label={SymbolLabel} colon>
-              {getFieldDecorator('transferSymbol', {
-                initialValue: 'EOS',
-                rules: [{ required: true, message: TransferSymbolPlaceholder }],
-              })(
-                <Input
-                  prefix={
-                    <Icon
-                      type="pay-circle-o"
-                      style={{ color: 'rgba(0,0,0,.25)' }}
-                    />
-                  }
-                  placeholder={TransferSymbolPlaceholder}
+                  placeholder={CreatorAccountNamePlaceholder}
                 />,
               )}
             </FormItem>
             <FormItem
-              help={TransferMemoHelp}
+              help={NewAccountNameHelp}
               {...formItemLayout}
-              label="Memo"
+              label={NameLabel}
               colon
             >
-              {getFieldDecorator('transferMemo', {
-                rules: [{ required: false, message: TransferMemoPlaceholder }],
+              {getFieldDecorator('NewAccountName', {
+                rules: [
+                  {
+                    required: true,
+                    len: 12,
+                    message: NewAccountNamePlaceholder,
+                  },
+                ],
+              })(
+                <Input
+                  prefix={
+                    <Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />
+                  }
+                  placeholder={NewAccountNamePlaceholder}
+                />,
+              )}
+            </FormItem>
+            <FormItem {...formItemLayout} label="OwnerKey" colon>
+              {getFieldDecorator('OwnerKey', {
+                rules: [
+                  {
+                    required: false,
+                    message: OwnerKeyPlaceholder,
+                  },
+                ],
+              })(
+                <Input
+                  prefix={
+                    <Icon type="unlock" style={{ color: 'rgba(0,0,0,.25)' }} />
+                  }
+                  placeholder={OwnerKeyPlaceholder}
+                />,
+              )}
+            </FormItem>
+            <FormItem {...formItemLayout} label="ActiveKey" colon>
+              {getFieldDecorator('ActiveKey', {
+                rules: [
+                  {
+                    required: true,
+                    message: ActiveKeyPlaceholder,
+                  },
+                ],
+              })(
+                <Input
+                  prefix={
+                    <Icon type="unlock" style={{ color: 'rgba(0,0,0,.25)' }} />
+                  }
+                  placeholder={ActiveKeyPlaceholder}
+                />,
+              )}
+            </FormItem>
+            <FormItem
+              help={BytesHelp}
+              {...formItemLayout}
+              label={BytesLabel}
+              colon
+            >
+              {getFieldDecorator('Bytes', {
+                rules: [
+                  {
+                    required: true,
+                    message: BytesPlaceholder,
+                  },
+                ],
               })(
                 <Input
                   prefix={
@@ -328,7 +328,47 @@ export class TransferPage extends React.Component {
                       style={{ color: 'rgba(0,0,0,.25)' }}
                     />
                   }
-                  placeholder={TransferMemoPlaceholder}
+                  placeholder={BytesPlaceholder}
+                />,
+              )}
+            </FormItem>
+            <FormItem {...formItemLayout} label="StakeNet" colon>
+              {getFieldDecorator('StakeNetQuantity', {
+                rules: [
+                  {
+                    required: true,
+                    message: StakeNetQuantityPlaceholder,
+                  },
+                ],
+              })(
+                <Input
+                  prefix={
+                    <Icon
+                      type="pay-circle-o"
+                      style={{ color: 'rgba(0,0,0,.25)' }}
+                    />
+                  }
+                  placeholder={StakeNetQuantityPlaceholder}
+                />,
+              )}
+            </FormItem>
+            <FormItem {...formItemLayout} label="StakeCpu" colon>
+              {getFieldDecorator('StakeCpuQuantity', {
+                rules: [
+                  {
+                    required: true,
+                    message: StakeCpuQuantityPlaceholder,
+                  },
+                ],
+              })(
+                <Input
+                  prefix={
+                    <Icon
+                      type="pay-circle-o"
+                      style={{ color: 'rgba(0,0,0,.25)' }}
+                    />
+                  }
+                  placeholder={StakeCpuQuantityPlaceholder}
                 />,
               )}
             </FormItem>
@@ -353,12 +393,11 @@ export class TransferPage extends React.Component {
   }
 }
 
-TransferPage.propTypes = {
+CreateAccountPage.propTypes = {
   form: PropTypes.object,
   intl: PropTypes.object,
 };
+const CreateAccountPageIntl = injectIntl(CreateAccountPage);
+const CreateAccountPageForm = Form.create()(CreateAccountPageIntl);
 
-const TransferPageIntl = injectIntl(TransferPage);
-const TransferPageForm = Form.create()(TransferPageIntl);
-
-export default TransferPageForm;
+export default CreateAccountPageForm;

@@ -4,19 +4,27 @@
  */
 
 import React from 'react';
+import PropTypes from 'prop-types';
+import { injectIntl } from 'react-intl';
 import styled from 'styled-components';
 import { Layout } from 'antd';
+import utilsMsg from '../../utils/messages';
 const { Footer } = Layout;
 
-export default class FooterComp extends React.PureComponent {
+class FooterComp extends React.PureComponent {
   componentDidMount() {}
 
   render() {
+    const { formatMessage } = this.props.intl;
     return (
-      <FooterWrapper>Ant Design ©2018 Created by Eos Cannon</FooterWrapper>
+      <FooterWrapper>{formatMessage(utilsMsg.FooterCompText)}</FooterWrapper>
     );
   }
 }
+FooterComp.propTypes = {
+  intl: PropTypes.object,
+};
+export default injectIntl(FooterComp);
 
 const FooterWrapper = styled(Footer)`
   text-align: center;
