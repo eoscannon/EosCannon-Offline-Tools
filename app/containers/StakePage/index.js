@@ -141,6 +141,7 @@ export class StakePage extends React.Component {
           });
           this.setState({
             GetTransactionButtonLoading: false,
+            QrCodeValue: JSON.stringify(tr.transaction),
           });
           openTransactionSuccessNotification(this.state.formatMessage);
         })
