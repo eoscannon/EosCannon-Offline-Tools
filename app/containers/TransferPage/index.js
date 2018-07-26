@@ -5,7 +5,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Form, Icon, Input, Button, Alert, notification } from 'antd';
+import { Form, Icon, Input, Button, Alert, notification, Select } from 'antd';
 import copy from 'copy-to-clipboard';
 import QRCode from 'qrcode.react';
 import EOS from 'eosjs';
@@ -16,8 +16,12 @@ import {
   FormComp,
 } from '../../components/NodeComp';
 
+import eosioAbi from './abi';
+import eosIqAbi from './iqAbi';
+
 const FormItem = Form.Item;
 const { TextArea } = Input;
+const { Option } = Select;
 
 export class TransferPage extends React.Component {
   constructor(props) {
@@ -45,7 +49,10 @@ export class TransferPage extends React.Component {
       // keyProvider,
       FromAccountName,
       ToAccountName,
+      transferContract,
       transferQuantity,
+      transferDigit,
+      transferSymbol,
       transaction,
     } = values;
     this.setState({
@@ -54,7 +61,10 @@ export class TransferPage extends React.Component {
         // keyProvider &&
         FromAccountName &&
         ToAccountName &&
-        transferQuantity,
+        transferContract &&
+        transferQuantity &&
+        transferDigit &&
+        transferSymbol,
     });
     this.setState({
       CopyTransactionButtonState:
@@ -62,7 +72,10 @@ export class TransferPage extends React.Component {
         // keyProvider &&
         FromAccountName &&
         ToAccountName &&
+        transferContract &&
         transferQuantity &&
+        transferDigit &&
+        transferSymbol &&
         transaction,
     });
   };
@@ -104,18 +117,48 @@ export class TransferPage extends React.Component {
     const {
       FromAccountName,
       ToAccountName,
+      transferContract,
       transferQuantity,
+      transferDigit,
+      transferSymbol,
       transferMemo,
     } = values;
 
     let options = {sign: false};
+
+    if (transferContract !== 'eosio' && transferContract !== 'eosio.token') {
+      if (transferContract.toUpperCase() === 'EVERIPEDIAIQ') {
+        eos.fc.abiCache.abi(transferContract, eosIqAbi);
+      } else {
+        eos.fc.abiCache.abi(transferContract, eosioAbi);
+      }
+    }
+
+
     eos
-      .transfer({
-        from: FromAccountName,
-        to: ToAccountName,
-        quantity: `${Number(transferQuantity).toFixed(4)} EOS`,
-        memo: transferMemo || '',
+        .transaction({
+          actions: [
+            {
+              account: transferContract,
+              name: 'transfer',
+              authorization: [
+                {
+                  actor: FromAccountName,
+                  permission: 'active',
+                },
+              ],
+              data: {
+                from: FromAccountName,
+                to: ToAccountName,
+                quantity: `${Number(transferQuantity).toFixed(
+                  Number(transferDigit),
+                )} ${transferSymbol.toUpperCase()}`,
+                memo: transferMemo || '',
+              },
+            },
+          ],
       }, options)
+
       .then(tr => {
         this.props.form.setFieldsValue({
           transaction: JSON.stringify(tr.transaction),
@@ -130,7 +173,7 @@ export class TransferPage extends React.Component {
         this.setState({
           GetTransactionButtonLoading: false,
         });
-        this.openTransactionFailNotification(err.error.what);
+        this.openTransactionFailNotification(err.error);
       });
   };
   /**
@@ -243,6 +286,21 @@ export class TransferPage extends React.Component {
                 />,
               )}
             </FormItem>
+
+            <FormItem>
+              {getFieldDecorator('transferContract', {
+                initialValue: 'eosio.token',
+                rules: [{ required: true, message: '请输入Contract!' }],
+              })(
+                <Input
+                  prefix={
+                    <Icon type="pay-circle-o" style={{ color: 'rgba(0,0,0,.25)' }} />
+                  }
+                  placeholder="请输入Contract"
+                />,
+              )}
+            </FormItem>
+
             <FormItem>
               {getFieldDecorator('transferQuantity', {
                 rules: [{ required: true, message: '请输入转账的数量!' }],
@@ -258,6 +316,43 @@ export class TransferPage extends React.Component {
                 />,
               )}
             </FormItem>
+
+
+            <FormItem>
+              {getFieldDecorator('transferDigit', {
+                initialValue: '4',
+                rules: [{ required: true, message: '请输入精度!' }],
+              })(
+                <Select
+                  style={{ width: '100%' }}
+                >
+                  <Option key="4" value="4">
+                    4
+                  </Option>
+                  <Option key="3" value="3">
+                    3
+                  </Option>
+                </Select>,
+              )}
+            </FormItem>
+
+
+
+            <FormItem>
+              {getFieldDecorator('transferSymbol', {
+                initialValue: 'EOS',
+                rules: [{ required: true, message: '请输入Symbol!' }],
+              })(
+                <Input
+                  prefix={
+                    <Icon type="pay-circle-o" style={{ color: 'rgba(0,0,0,.25)' }} />
+                  }
+                  placeholder="请输入Symbol"
+                />,
+              )}
+            </FormItem>
+
+
             <FormItem>
               {getFieldDecorator('transferMemo', {
                 rules: [
