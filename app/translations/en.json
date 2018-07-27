@@ -23,7 +23,7 @@
   "Public JsonAlertMessage":
     "Please enter the Block field obtained by the network",
   "Public JsonAlertDescription":
-    "Please go to the https://tool.eoscannon.io/ network to get the Block field，Networking to open web pages, scanning qrcode code can be obtained.。",
+    "Please go to the https://tool.eoscannon.io/ network to get the Block field，Networking to open web pages, scanning qrcode code can be obtained.",
   "Public JsonInfoPlaceholder":
     "Please enter the Block field obtained by the network",
   "Public OpenCameraButtonName": "Open Camera",
