@@ -9,6 +9,7 @@ import { Form, Icon, Input, Select } from 'antd';
 import copy from 'copy-to-clipboard';
 import eosioAbi from './abi';
 import eosIqAbi from './iqAbi';
+import adcAbi from './adcAbi';
 import {
   formItemLayout,
   getEos,
@@ -110,6 +111,8 @@ export class TransferPage extends React.Component {
     if (transferContract !== 'eosio' && transferContract !== 'eosio.token') {
       if (transferContract.toUpperCase() === 'EVERIPEDIAIQ') {
         eos.fc.abiCache.abi(transferContract, eosIqAbi);
+      } else if (transferContract.toUpperCase() === 'CHALLENGEDAC') {
+        eos.fc.abiCache.abi(transferContract, adcAbi);
       } else {
         eos.fc.abiCache.abi(transferContract, eosioAbi);
       }
