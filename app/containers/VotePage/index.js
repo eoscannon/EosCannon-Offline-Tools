@@ -73,6 +73,7 @@ export class VotePage extends React.Component {
     const values = this.props.form.getFieldsValue();
     const eos = getEos(values);
     const { voter, producers } = values;
+    producers.sort();
     eos
       .voteproducer({
         voter,
