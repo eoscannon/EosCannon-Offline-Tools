@@ -124,7 +124,7 @@ export class TransferPage extends React.Component {
       transferMemo,
     } = values;
 
-    let options = {sign: false};
+    const options = { sign: false };
 
     if (transferContract !== 'eosio' && transferContract !== 'eosio.token') {
       if (transferContract.toUpperCase() === 'EVERIPEDIAIQ') {
@@ -134,9 +134,9 @@ export class TransferPage extends React.Component {
       }
     }
 
-
     eos
-        .transaction({
+      .transaction(
+        {
           actions: [
             {
               account: transferContract,
@@ -157,8 +157,9 @@ export class TransferPage extends React.Component {
               },
             },
           ],
-      }, options)
-
+        },
+        options,
+      )
       .then(tr => {
         this.props.form.setFieldsValue({
           transaction: JSON.stringify(tr.transaction),
@@ -173,7 +174,7 @@ export class TransferPage extends React.Component {
         this.setState({
           GetTransactionButtonLoading: false,
         });
-        this.openTransactionFailNotification(err.error);
+        this.openTransactionFailNotification(err);
       });
   };
   /**
@@ -222,7 +223,6 @@ export class TransferPage extends React.Component {
   render() {
     const { getFieldDecorator } = this.props.form;
     const jsonInfoDescription = `请前往 ${onLineAddress} 获取json字段，联网打开网页，即可获得。复制json字段，将其粘贴在免得输入框中即可。`;
-    const transactionInfoDescription = `请将下面的签名报文复制后，前往 ${onLineAddress} 联网后进行播报发送。`;
     return (
       <LayoutContent>
         <LayoutContentBox>
@@ -250,18 +250,18 @@ export class TransferPage extends React.Component {
                 closable
               />
             </FormItem>
-            {/*<FormItem>*/}
-              {/*{getFieldDecorator('keyProvider', {*/}
-                {/*rules: [{ required: true, message: '请输入私钥!' }],*/}
-              {/*})(*/}
-                {/*<Input*/}
-                  {/*prefix={*/}
-                    {/*<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />*/}
-                  {/*}*/}
-                  {/*placeholder="请输入私钥"*/}
-                {/*/>,*/}
-              {/*)}*/}
-            {/*</FormItem>*/}
+            {/* <FormItem> */}
+            {/* {getFieldDecorator('keyProvider', { */}
+            {/* rules: [{ required: true, message: '请输入私钥!' }], */}
+            {/* })( */}
+            {/* <Input */}
+            {/* prefix={ */}
+            {/* <Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} /> */}
+            {/* } */}
+            {/* placeholder="请输入私钥" */}
+            {/* />, */}
+            {/* )} */}
+            {/* </FormItem> */}
             <FormItem>
               {getFieldDecorator('FromAccountName', {
                 rules: [{ required: true, message: '请输入私钥对应的账户名!' }],
@@ -294,7 +294,10 @@ export class TransferPage extends React.Component {
               })(
                 <Input
                   prefix={
-                    <Icon type="pay-circle-o" style={{ color: 'rgba(0,0,0,.25)' }} />
+                    <Icon
+                      type="pay-circle-o"
+                      style={{ color: 'rgba(0,0,0,.25)' }}
+                    />
                   }
                   placeholder="请输入Contract"
                 />,
@@ -317,15 +320,12 @@ export class TransferPage extends React.Component {
               )}
             </FormItem>
 
-
             <FormItem>
               {getFieldDecorator('transferDigit', {
                 initialValue: '4',
                 rules: [{ required: true, message: '请输入精度!' }],
               })(
-                <Select
-                  style={{ width: '100%' }}
-                >
+                <Select style={{ width: '100%' }}>
                   <Option key="4" value="4">
                     4
                   </Option>
@@ -336,8 +336,6 @@ export class TransferPage extends React.Component {
               )}
             </FormItem>
 
-
-
             <FormItem>
               {getFieldDecorator('transferSymbol', {
                 initialValue: 'EOS',
@@ -345,13 +343,15 @@ export class TransferPage extends React.Component {
               })(
                 <Input
                   prefix={
-                    <Icon type="pay-circle-o" style={{ color: 'rgba(0,0,0,.25)' }} />
+                    <Icon
+                      type="pay-circle-o"
+                      style={{ color: 'rgba(0,0,0,.25)' }}
+                    />
                   }
                   placeholder="请输入Symbol"
                 />,
               )}
             </FormItem>
-
 
             <FormItem>
               {getFieldDecorator('transferMemo', {
@@ -385,7 +385,10 @@ export class TransferPage extends React.Component {
               {getFieldDecorator('transaction', {
                 rules: [{ required: true, message: '请复制生成的待签名报文!' }],
               })(
-                <TextArea disabled="true" placeholder="请复制生成的待签名报文" />,
+                <TextArea
+                  disabled="true"
+                  placeholder="请复制生成的待签名报文"
+                />,
               )}
             </FormItem>
             <FormItem>

@@ -58,10 +58,7 @@ export class StakePage extends React.Component {
     } = values;
     this.setState({
       GetTransactionButtonState:
-        jsonInfo &&
-        accountName &&
-        stakeNetQuantity &&
-        stakeCpuQuantity,
+        jsonInfo && accountName && stakeNetQuantity && stakeCpuQuantity,
     });
     this.setState({
       CopyTransactionButtonState:
@@ -108,16 +105,19 @@ export class StakePage extends React.Component {
     const values = this.props.form.getFieldsValue();
     const { accountName, stakeNetQuantity, stakeCpuQuantity } = values;
 
-    let options = {sign: false};
+    const options = { sign: false };
     if (this.state.isDelegatebw) {
       eos
-        .delegatebw({
-          from: accountName,
-          receiver: accountName,
-          stake_net_quantity: `${Number(stakeNetQuantity).toFixed(4)} EOS`,
-          stake_cpu_quantity: `${Number(stakeCpuQuantity).toFixed(4)} EOS`,
-          transfer: 0,
-        }, options)
+        .delegatebw(
+          {
+            from: accountName,
+            receiver: accountName,
+            stake_net_quantity: `${Number(stakeNetQuantity).toFixed(4)} EOS`,
+            stake_cpu_quantity: `${Number(stakeCpuQuantity).toFixed(4)} EOS`,
+            transfer: 0,
+          },
+          options,
+        )
         .then(tr => {
           this.props.form.setFieldsValue({
             transaction: JSON.stringify(tr.transaction),
@@ -136,12 +136,15 @@ export class StakePage extends React.Component {
         });
     } else {
       eos
-        .undelegatebw({
-          from: accountName,
-          receiver: accountName,
-          unstake_net_quantity: `${Number(stakeNetQuantity).toFixed(4)} EOS`,
-          unstake_cpu_quantity: `${Number(stakeCpuQuantity).toFixed(4)} EOS`,
-        }, options)
+        .undelegatebw(
+          {
+            from: accountName,
+            receiver: accountName,
+            unstake_net_quantity: `${Number(stakeNetQuantity).toFixed(4)} EOS`,
+            unstake_cpu_quantity: `${Number(stakeCpuQuantity).toFixed(4)} EOS`,
+          },
+          options,
+        )
         .then(tr => {
           this.props.form.setFieldsValue({
             transaction: JSON.stringify(tr.transaction),
@@ -205,7 +208,6 @@ export class StakePage extends React.Component {
   render() {
     const { getFieldDecorator } = this.props.form;
     const jsonInfoDescription = `请前往 ${onLineAddress} 获取json字段，联网打开网页，即可获得。复制json字段，将其粘贴在免得输入框中即可。`;
-    const transactionInfoDescription = `请将下面的签名报文复制后，前往 ${onLineAddress} 联网后进行播报发送。`;
     return (
       <LayoutContent>
         <LayoutContentBox>
@@ -298,7 +300,10 @@ export class StakePage extends React.Component {
               {getFieldDecorator('transaction', {
                 rules: [{ required: true, message: '请复制生成的待签名报文!' }],
               })(
-                <TextArea disabled="true" placeholder="请复制生成的待签名报文" />,
+                <TextArea
+                  disabled="true"
+                  placeholder="请复制生成的待签名报文"
+                />,
               )}
             </FormItem>
             <FormItem>

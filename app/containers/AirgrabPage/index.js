@@ -1,11 +1,11 @@
 /*
- * ProxyPage
+ * AirgrabPage
  *
  */
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Form, Icon, Input, Button, Alert, notification } from 'antd';
+import { Form, Icon, Input, Button, Alert, Table, notification } from 'antd';
 import EOS from 'eosjs';
 import copy from 'copy-to-clipboard';
 import QRCode from 'qrcode.react';
@@ -15,18 +15,24 @@ import {
   LayoutContent,
   FormComp,
 } from '../../components/NodeComp';
-
+import arigrabs from './airgrabs.json';
+import poormantoken from './poormantoken.json';
+import ridlridlcoin from './ridlridlcoin.json';
+import trybenetwork from './trybenetwork.json';
+import wizznetwork1 from './wizznetwork1.json';
+import defaultAbi from '../TransferPage/abi';
 const FormItem = Form.Item;
 const { TextArea } = Input;
 
-export class ProxyPage extends React.Component {
+export class AirgrabPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      GetTransactionButtonLoading: false, // 点击获取报文时，按钮加载状态
       GetTransactionButtonState: false, // 获取报文按钮可点击状态
       CopyTransactionButtonState: false, // 复制报文按钮可点击状态
       QrCodeValue: '欢迎使用EOS佳能离线工具', // 二维码内容
+      tableData: [],
+      tableColumns: [],
     };
   }
   /**
@@ -40,16 +46,52 @@ export class ProxyPage extends React.Component {
    * */
   onValuesChange = nextProps => {
     const values = nextProps.form.getFieldsValue();
-    const { jsonInfo, voter, proxy, transaction } = values;
+    const { jsonInfo, AccountName, transaction } = values;
     this.setState({
-      GetTransactionButtonState: jsonInfo && voter && proxy,
+      GetTransactionButtonState: !!jsonInfo && !!AccountName,
     });
     this.setState({
-      CopyTransactionButtonState: jsonInfo && voter && proxy && transaction,
+      CopyTransactionButtonState: !!jsonInfo && !!AccountName && !!transaction,
     });
   };
+  componentWillMount() {
+    this.setState({
+      tableData: arigrabs || [],
+      tableColumns: [
+        {
+          title: 'symbol',
+          dataIndex: 'symbol',
+          key: 'symbol',
+          align: 'center',
+          width: '60%',
+          render: (text, record) => (
+            <a href={record.url} target="_blank">
+              {text}
+            </a>
+          ),
+        },
+        {
+          title: '操作',
+          key: 'action',
+          align: 'center',
+          render: (text, record) => (
+            <span>
+              <Button
+                disabled={!this.state.GetTransactionButtonState}
+                type="primary"
+                size="small"
+                onClick={() => this.handleGetTransaction(record)}
+              >
+                领取空投
+              </Button>
+            </span>
+          ),
+        },
+      ],
+    });
+  }
   /**
-   * 根据用户输入的报头：jsonInfo、私钥：keyProvider生成eos
+   * 根据用户输入的报头：jsonInfo生成eos
    * */
   getEos = () => {
     const values = this.props.form.getFieldsValue();
@@ -73,23 +115,52 @@ export class ProxyPage extends React.Component {
   /**
    * 用户点击生成报文，根据用户输入参数，生成签名报文，并将其赋值到文本框和生成对应的二维码
    * */
-  handleGetTransaction = () => {
+  handleGetTransaction = record => {
     if (!this.state.GetTransactionButtonState) {
       return;
     }
-    this.setState({
-      GetTransactionButtonLoading: true,
-    });
     const eos = this.getEos();
     const values = this.props.form.getFieldsValue();
-    const { voter, proxy } = values;
+    const { AccountName } = values;
     const options = { sign: false };
+    let abi = null;
+    switch (record.account) {
+      case 'poormantoken':
+        abi = poormantoken;
+        break;
+      case 'ridlridlcoin':
+        abi = ridlridlcoin;
+        break;
+      case 'trybenetwork':
+        abi = trybenetwork;
+        break;
+      case 'wizznetwork1':
+        abi = wizznetwork1;
+        break;
+      default:
+        abi = defaultAbi;
+    }
+    eos.fc.abiCache.abi(record.account, abi[0]);
+    const data =
+      record.method === 'signup'
+        ? { owner: AccountName, quantity: `0.0000 ${record.symbol}` }
+        : { claimer: AccountName };
     eos
-      .voteproducer(
+      .transaction(
         {
-          voter,
-          proxy,
-          producers: [],
+          actions: [
+            {
+              account: record.account,
+              name: record.method,
+              authorization: [
+                {
+                  actor: AccountName,
+                  permission: 'active',
+                },
+              ],
+              data,
+            },
+          ],
         },
         options,
       )
@@ -98,16 +169,12 @@ export class ProxyPage extends React.Component {
           transaction: JSON.stringify(tr.transaction),
         });
         this.setState({
-          GetTransactionButtonLoading: false,
           QrCodeValue: JSON.stringify(tr.transaction),
         });
         this.openTransactionSuccessNotification();
       })
       .catch(err => {
-        this.setState({
-          GetTransactionButtonLoading: false,
-        });
-        this.openTransactionFailNotification(err.error.what);
+        this.openTransactionFailNotification(err);
       });
   };
   /**
@@ -184,39 +251,24 @@ export class ProxyPage extends React.Component {
               />
             </FormItem>
             <FormItem>
-              {getFieldDecorator('voter', {
-                rules: [{ required: true, message: '请输入您投票的账户名!' }],
+              {getFieldDecorator('AccountName', {
+                rules: [{ required: true, message: '请输入领取空投的账户' }],
               })(
                 <Input
                   prefix={
                     <Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />
                   }
-                  placeholder="请输入您投票的账户名"
+                  placeholder="请输入领取空投的账户"
                 />,
               )}
             </FormItem>
             <FormItem>
-              {getFieldDecorator('proxy', {
-                rules: [{ required: true, message: '请输入代理投票的账户名!' }],
-              })(
-                <Input
-                  prefix={
-                    <Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />
-                  }
-                  placeholder="请输入代理投票的账户名"
-                />,
-              )}
-            </FormItem>
-            <FormItem>
-              <Button
-                type="primary"
-                className="form-button"
-                onClick={this.handleGetTransaction}
-                loading={this.state.GetTransactionButtonLoading}
-                disabled={!this.state.GetTransactionButtonState}
-              >
-                生成待签名报文
-              </Button>
+              <Table
+                columns={this.state.tableColumns}
+                dataSource={this.state.tableData}
+                pagination={false}
+                size="middle"
+              />
             </FormItem>
             <FormItem>
               {getFieldDecorator('transaction', {
@@ -250,10 +302,10 @@ export class ProxyPage extends React.Component {
   }
 }
 
-ProxyPage.propTypes = {
+AirgrabPage.propTypes = {
   form: PropTypes.object,
 };
 
-const ProxyPageForm = Form.create()(ProxyPage);
+const AirgrabPageForm = Form.create()(AirgrabPage);
 
-export default ProxyPageForm;
+export default AirgrabPageForm;
