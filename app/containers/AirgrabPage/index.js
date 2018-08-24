@@ -20,6 +20,7 @@ import poormantoken from './poormantoken.json';
 import ridlridlcoin from './ridlridlcoin.json';
 import trybenetwork from './trybenetwork.json';
 import wizznetwork1 from './wizznetwork1.json';
+import eosatidiumio from './eosatidiumio.json';
 import defaultAbi from '../TransferPage/abi';
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -136,6 +137,9 @@ export class AirgrabPage extends React.Component {
         break;
       case 'wizznetwork1':
         abi = wizznetwork1;
+        break;
+      case 'eosatidiumio':
+        abi = eosatidiumio;
         break;
       default:
         abi = defaultAbi;
